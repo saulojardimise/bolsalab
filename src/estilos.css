@@ -231,8 +231,6 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
   border: 3px solid var(--cartao); background: var(--verde-forte); color: var(--sobre-verde);
 }
 .botao-camera:disabled { opacity: 0.6; }
-.opcoes-foto { display: grid; gap: 8px; width: 100%; }
-.opcoes-foto .botao { justify-content: flex-start; }
 .link-perigo { color: var(--vermelho); justify-self: start; }
 
 .faixa-demo {
