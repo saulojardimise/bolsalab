@@ -1,0 +1,55 @@
+# Publica o BolsaLab no GitHub Pages a cada mudança no ramo main.
+# Também dá para rodar à mão: aba Actions > Publicar BolsaLab > Run workflow.
+name: Publicar BolsaLab
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar o site
+        run: npm run build
+        env:
+          # o site fica em https://<usuario>.github.io/<repositorio>/
+          BASE_PATH: /${{ github.event.repository.name }}/
+          # chaves públicas do Supabase (podem ficar aqui; a segurança está nas regras do banco)
+          VITE_SUPABASE_URL: https://pvkhqfomfmhtdmvbzohq.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_BfV3fJAiDJQMpwXkD8vZRw_EBL-Z95n
+
+      - name: Página para links diretos
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
