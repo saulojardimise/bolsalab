@@ -124,14 +124,19 @@ export default function Painel({ uid }) {
 
   return (
     <div className="painel">
-      {!sobreposta && <Topo aoAbrirPerfil={() => setPerfilAberto(true)} />}
+      {!sobreposta && <Topo foto={dados.perfil.foto_url} aoAbrirPerfil={() => setPerfilAberto(true)} />}
       {api.modoDemo && <p className="faixa-demo">Demonstração com preços fictícios</p>}
       {erro && <p className="aviso aviso-erro conteudo" role="alert">{erro}</p>}
       <main className="conteudo">{conteudo}</main>
       <Navegacao aba={sobreposta?.tipo === 'acao' ? 'mercado' : aba} aoTrocar={trocarAba} />
 
       {perfilAberto && (
-        <MenuPerfil perfil={dados.perfil} aoFechar={() => setPerfilAberto(false)} aoSair={() => api.sair()} />
+        <MenuPerfil
+          perfil={dados.perfil}
+          aoFechar={() => setPerfilAberto(false)}
+          aoSair={() => api.sair()}
+          aoMudarFoto={(foto_url) => setDados((d) => ({ ...d, perfil: { ...d.perfil, foto_url } }))}
+        />
       )}
       {recado && <p className="recado" role="status">{recado}</p>}
     </div>

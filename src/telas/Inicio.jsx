@@ -43,7 +43,6 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
     <div className="pilha">
       <section className="saudacao">
         <h1>Olá, {nome}!</h1>
-        <p className="suave">Vamos continuar aprendendo sobre o mercado hoje?</p>
         <StatusPregao liberada={dados.liberada} pausada={dados.config.negociacao_pausada} demo={api.modoDemo} />
       </section>
 

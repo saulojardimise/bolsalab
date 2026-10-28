@@ -297,6 +297,13 @@ export function criarApiDemo() {
     async ordens() { await atraso(); return estado.ordens.map((o) => ({ ...o })); },
     async cobrancas() { await atraso(); return estado.cobrancas.map((c) => ({ ...c })); },
     async ajustes() { await atraso(); return []; },
+    async enviarFoto(uid, blob) {
+      await atraso(400);
+      const url = await new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(blob); });
+      estado.perfil.foto_url = url;
+      return url;
+    },
+    async removerFoto() { estado.perfil.foto_url = null; },
     async ranking(turmaId) {
       await atraso();
       const v = vendidas().reduce((s, x) => s + x.resultado, 0);

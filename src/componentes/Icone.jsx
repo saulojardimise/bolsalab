@@ -24,6 +24,8 @@ const DESENHOS = {
   editar: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
   pausa: <path d="M9 5v14M15 5v14" />,
   play: <path d="M7 4.5v15L19 12z" />,
+  camera: <><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z" /><circle cx="12" cy="12.5" r="3.3" /></>,
+  imagem: <><rect x="3.5" y="4.5" width="17" height="15" rx="2" /><circle cx="9" cy="9.5" r="1.6" /><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5" /></>,
 };
 
 export default function Icone({ nome, tamanho = 22, className = '', titulo }) {

@@ -144,13 +144,15 @@ button:disabled { cursor: not-allowed; }
 
 /* ---------------------------------------------------------------- base */
 .pilha { display: grid; gap: 18px; }
+/* seção com título: o mesmo espaço entre o título e o conteúdo em todas as telas */
+.pilha > section { display: grid; gap: 12px; min-width: 0; }
 .cartao {
   background: var(--cartao); border-radius: var(--raio-cartao); box-shadow: var(--sombra);
   padding: 18px; display: grid; gap: 12px; min-width: 0;
 }
 .cartao-lista { padding: 4px 16px; gap: 0; list-style: none; margin: 0; }
 .secao-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-.secao-titulo { margin-bottom: 10px; display: flex; gap: 8px; align-items: baseline; }
+.secao-titulo { margin: 0; display: flex; gap: 8px; align-items: baseline; }
 .secao-titulo .suave { font-size: 0.9rem; font-weight: 500; }
 
 .botao {
@@ -213,10 +215,25 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
   font-size: 0.78rem; font-weight: 750; letter-spacing: 0.04em;
 }
 .avatar {
-  flex: none; width: 44px; height: 44px; display: grid; place-items: center;
+  flex: none; width: 44px; height: 44px; display: grid; place-items: center; overflow: hidden;
   border-radius: 50%; border: 0; background: var(--azul-fundo); color: var(--marinho);
 }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatar-grande { width: 64px; height: 64px; }
+.avatar-botao { flex: none; padding: 0; border: 0; background: none; border-radius: 50%; }
+.avatar-enviando { opacity: 0.45; }
+
+/* foto do perfil com o botão de câmera na beirada */
+.perfil-foto { position: relative; width: 96px; height: 96px; }
+.botao-camera {
+  position: absolute; right: -4px; bottom: -4px; width: 38px; height: 38px;
+  display: grid; place-items: center; border-radius: 50%;
+  border: 3px solid var(--cartao); background: var(--verde-forte); color: var(--sobre-verde);
+}
+.botao-camera:disabled { opacity: 0.6; }
+.opcoes-foto { display: grid; gap: 8px; width: 100%; }
+.opcoes-foto .botao { justify-content: flex-start; }
+.link-perigo { color: var(--vermelho); justify-self: start; }
 
 .faixa-demo {
   max-width: var(--largura); margin: 6px auto 0; padding: 6px 16px;

@@ -169,6 +169,22 @@ export function criarApi(supabase, { urlRetorno } = {}) {
         .eq('user_id', uid).order('data'));
     },
 
+    // Foto de perfil: vai para o Storage (avatares/<id>/foto.jpg) e o endereço fica no perfil
+    async enviarFoto(uid, blob) {
+      const caminho = `${uid}/foto.jpg`;
+      const { error } = await supabase.storage.from('avatares')
+        .upload(caminho, blob, { upsert: true, contentType: 'image/jpeg', cacheControl: '3600' });
+      if (error) throw new Error('Não foi possível enviar a foto. Tente de novo.');
+      const { data } = supabase.storage.from('avatares').getPublicUrl(caminho);
+      const url = `${data.publicUrl}?v=${Date.now()}`;   // muda a cada envio, para não mostrar a antiga
+      return checar(await supabase.rpc('definir_foto', { p_url: url }));
+    },
+
+    async removerFoto(uid) {
+      await supabase.storage.from('avatares').remove([`${uid}/foto.jpg`]);
+      checar(await supabase.rpc('definir_foto', { p_url: null }));
+    },
+
     async executarOrdem(ticker, tipo, quantidade) {
       return checar(await supabase.rpc('executar_ordem', {
         p_ticker: ticker, p_tipo: tipo, p_quantidade: quantidade,
