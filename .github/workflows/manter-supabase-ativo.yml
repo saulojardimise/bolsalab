@@ -1,0 +1,37 @@
+# Mantém o projeto do Supabase acordado.
+# No plano gratuito, o Supabase pausa o projeto depois de 7 dias sem uso.
+# Duas vezes por semana (segunda e quinta, por volta das 9h de Brasília)
+# este fluxo faz uma consulta simples ao banco, com a chave pública do app.
+# Também dá para rodar na hora: aba Actions > "Manter o Supabase ativo" > Run workflow.
+name: Manter o Supabase ativo
+
+on:
+  schedule:
+    - cron: '17 12 * * 1,4'   # segunda e quinta, 12:17 UTC = 9:17 em Brasília
+  workflow_dispatch:
+
+permissions:
+  actions: write     # para manter este agendamento ligado (último passo)
+  contents: read
+
+jobs:
+  consultar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consulta ao banco
+        env:
+          URL: https://pvkhqfomfmhtdmvbzohq.supabase.co
+          CHAVE: sb_publishable_BfV3fJAiDJQMpwXkD8vZRw_EBL-Z95n   # chave pública (a mesma do app)
+        run: |
+          resposta=$(curl -sS --fail-with-body --retry 3 --retry-delay 30 --retry-all-errors \
+            -X POST "$URL/rest/v1/rpc/verificar_token" \
+            -H "apikey: $CHAVE" -H "Content-Type: application/json" \
+            -d '{"p_token":"MANTER-ATIVO"}')
+          echo "Supabase respondeu: $resposta"
+
+      - name: Manter este agendamento ligado
+        # O GitHub desliga agendamentos de repositórios sem commits há 60 dias.
+        # Reativar o fluxo zera essa contagem, sem precisar de commit.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/manter-supabase-ativo.yml/enable"

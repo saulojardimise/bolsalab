@@ -98,7 +98,7 @@ test('a prévia da boleta bate com o que o banco executa', { skip: pular }, asyn
   const carteira = await apis.ana.carteira(ANA);
   assert.equal(carteira.length, 1);
   assert.equal(carteira[0].quantidade, 100);
-  assert.equal(Number(carteira[0].preco_medio), 40.15);
+  assert.equal(Number(carteira[0].preco_medio), 40);
 
   // venda parcial
   p = previa({ tipo: 'venda', quantidade: 30, preco: 40, saldo, config: cfg, qtdComprada: 100 });

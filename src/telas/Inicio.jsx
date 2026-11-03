@@ -10,7 +10,7 @@ import StatusPregao from '../componentes/StatusPregao.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
 
 // Tela inicial: patrimônio com gráfico, saldo, dica do dia e os ativos do aluno
-export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher, irPara }) {
+export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher, irPara, aoAbrirExtrato }) {
   const [serie, setSerie] = useState(null);
   const [periodo, setPeriodo] = useState('1M');
   const [explicar, setExplicar] = useState(false);
@@ -72,6 +72,14 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
           <span>Saldo disponível</span>
           <strong className="num">{reais(resumo.saldo)}</strong>
         </div>
+        <button className="atalho" onClick={aoAbrirExtrato}>
+          <Icone nome="extrato" />
+          <span>
+            <strong>Extrato</strong>
+            <small>Compras, vendas, corretagens e aluguel</small>
+          </span>
+          <Icone nome="seta" tamanho={18} />
+        </button>
       </section>
 
       <section className="cartao dica" aria-labelledby="titulo-dica" aria-live="polite">

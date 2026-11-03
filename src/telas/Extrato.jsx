@@ -1,87 +1,140 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api/index.js';
-import { efeitoNoSaldo, TIPOS } from '../lib/regras.js';
+import { fluxoDeCaixa, GRUPOS } from '../lib/fluxo.js';
 import { dataHora, diaMes, numero, reais, reaisComSinal, tendencia } from '../lib/formato.js';
+import Icone from '../componentes/Icone.jsx';
 
-const TITULO_AJUSTE = {
-  troca_codigo: 'Troca de código',
-  desdobramento: 'Desdobramento',
-  grupamento: 'Grupamento',
-  conversao: 'Conversão de ações',
-};
-
-// Movimentações (extrato): ordens, aluguel cobrado e ajustes por eventos das ações
-// (troca de código, desdobramento...), do mais recente para o mais antigo
-export default function Extrato({ uid, versao }) {
-  const [itens, setItens] = useState(null);
+// Extrato: o fluxo de caixa completo do aluno. No topo, quanto entrou e saiu
+// por tipo (ações, corretagem, aluguel...); embaixo, cada lançamento com o
+// que foi pago pelas ações, a corretagem e o saldo depois dele.
+export default function Extrato({ uid, dados, resumo, versao, aoVoltar }) {
+  const [mov, setMov] = useState(null);
   const [erro, setErro] = useState('');
+  const [grupo, setGrupo] = useState('');
 
   useEffect(() => {
     let vivo = true;
-    Promise.all([api.ordens(uid), api.cobrancas(uid), api.ajustes(uid)])
-      .then(([ordens, cobrancas, ajustes]) => {
-        if (!vivo) return;
-        const lista = [
-          ...ordens.map((o) => ({ ...o, tipoItem: 'ordem', quando: o.criado_em })),
-          ...cobrancas.map((c) => ({ ...c, tipoItem: 'aluguel', quando: c.criado_em })),
-          ...ajustes.map((a) => ({ ...a, tipoItem: 'ajuste', quando: a.criado_em })),
-        ].sort((a, b) => new Date(b.quando) - new Date(a.quando));
-        setItens(lista);
-      })
+    Promise.all([api.ordens(uid, 5000), api.cobrancas(uid, 5000), api.ajustes(uid, 5000)])
+      .then(([ordens, cobrancas, ajustes]) => vivo && setMov({ ordens, cobrancas, ajustes }))
       .catch((e) => vivo && setErro(e.message));
     return () => { vivo = false; };
   }, [uid, versao]);
 
+  const fluxo = useMemo(() => mov && fluxoDeCaixa({
+    ...mov, saldoInicial: Number(dados.config.saldo_inicial), inicio: dados.perfil.criado_em ?? null,
+  }), [mov, dados.config.saldo_inicial, dados.perfil.criado_em]);
+
+  const lista = fluxo?.lancamentos.filter((l) => !grupo || l.grupo === grupo || (grupo === 'custos' && l.corretagem));
+  const t = fluxo?.totais;
+  // se faltar algum lançamento (conta muito antiga), o saldo real é o que vale
+  const confere = t && Math.abs(t.final - resumo.saldo) < 0.01;
+
   return (
-    <section aria-labelledby="titulo-extrato">
-      <h2 id="titulo-extrato" className="secao-titulo">Movimentações</h2>
+    <div className="pilha">
+      <header className="barra-acao">
+        <button className="botao-icone" onClick={aoVoltar} aria-label="Voltar"><Icone nome="voltar" /></button>
+        <h1>Extrato</h1>
+        <span style={{ width: 40 }} />
+      </header>
 
       {erro && <p className="aviso aviso-erro" role="alert">{erro}</p>}
-      {!itens && !erro && <p className="carregando" aria-busy="true">Carregando…</p>}
-      {itens?.length === 0 && <p className="cartao vazio">Nenhuma movimentação ainda. Suas ordens vão aparecer aqui.</p>}
+      {!fluxo && !erro && <p className="carregando" aria-busy="true">Carregando…</p>}
 
-      {itens?.length > 0 && <ul className="cartao cartao-lista extrato">
-        {itens?.map((i) => i.tipoItem === 'ordem' ? (
-          <li key={'o' + i.id} className={i.automatica ? 'extrato-automatica' : undefined}>
-            <div className="extrato-linha">
-              <span>
-                <strong>{TIPOS[i.tipo].feito}</strong> <span className="suave">{i.ticker}</span>
-              </span>
-              <span className={`num ${tendencia(efeitoNoSaldo(i))}`}>{reaisComSinal(efeitoNoSaldo(i))}</span>
+      {t && (
+        <section className="cartao" aria-labelledby="titulo-fluxo">
+          <h2 id="titulo-fluxo">Fluxo de caixa</h2>
+          <dl className="fluxo">
+            <Linha rotulo="Saldo inicial" valor={t.inicial} sinal={false} />
+            <Linha rotulo="Pago na compra de ações" valor={t.compras} />
+            <Linha rotulo="Recebido na venda de ações" valor={t.vendas} />
+            {t.descoberto !== 0 && <Linha rotulo="Resultado das vendas a descoberto" valor={t.descoberto} />}
+            <Linha rotulo={`Corretagens (${numero(t.ordens)} ${t.ordens === 1 ? 'ordem' : 'ordens'})`} valor={t.corretagens} />
+            {t.aluguel !== 0 && <Linha rotulo="Aluguel de ações" valor={t.aluguel} />}
+            {t.ajustes !== 0 && <Linha rotulo="Ajustes de eventos das ações" valor={t.ajustes} />}
+            <div className="fluxo-total">
+              <dt>Saldo disponível</dt>
+              <dd className="num">{reais(confere ? t.final : resumo.saldo)}</dd>
             </div>
-            <div className="extrato-detalhe">
-              <span>{numero(i.quantidade)} × {reais(i.preco)}, corretagem {reais(i.corretagem)}</span>
-              <span>{dataHora(i.criado_em)}</span>
-            </div>
-            {i.automatica && <p className="extrato-obs">{i.observacao}</p>}
-            {i.tipo === 'venda_descoberto' && (
-              <p className="extrato-obs">{reais(i.valor_total)} ficaram bloqueados como garantia.</p>
+          </dl>
+          {resumo.garantias > 0 && (
+            <p className="nota">
+              Fora do saldo: {reais(resumo.garantias)} bloqueados como garantia das vendas a descoberto.
+              Eles voltam ao saldo na recompra.
+            </p>
+          )}
+          {!confere && (
+            <p className="nota">O extrato mostra as movimentações registradas; o saldo disponível acima é o da sua conta.</p>
+          )}
+        </section>
+      )}
+
+      {fluxo && (
+        <section aria-labelledby="titulo-lancamentos">
+          <h2 id="titulo-lancamentos" className="secao-titulo">Lançamentos</h2>
+          <div className="chips" role="group" aria-label="Filtrar lançamentos">
+            {GRUPOS.map((g) => (
+              <button key={g.id} aria-pressed={grupo === g.id} onClick={() => setGrupo(g.id)}>{g.rotulo}</button>
+            ))}
+          </div>
+          {lista.length === 0
+            ? <p className="cartao vazio">Nenhum lançamento deste tipo ainda.</p>
+            : (
+              <ul className="cartao cartao-lista extrato">
+                {lista.map((l) => <Lancamento key={l.id} l={l} />)}
+              </ul>
             )}
-          </li>
-        ) : i.tipoItem === 'ajuste' ? (
-          <li key={'j' + i.id} className="extrato-ajuste">
-            <div className="extrato-linha">
-              <span><strong>{TITULO_AJUSTE[i.tipo] ?? 'Ajuste'}</strong> <span className="suave">{i.ticker}</span></span>
-              {Number(i.valor_saldo) !== 0 && (
-                <span className={`num ${tendencia(i.valor_saldo)}`}>{reaisComSinal(i.valor_saldo)}</span>
-              )}
-            </div>
-            <p className="extrato-obs">{i.descricao}</p>
-            <div className="extrato-detalhe"><span>{dataHora(i.criado_em)}</span></div>
-          </li>
-        ) : (
-          <li key={'a' + i.id}>
-            <div className="extrato-linha">
-              <span><strong>Aluguel</strong> <span className="suave">{i.ticker}</span></span>
-              <span className="num baixa">{reaisComSinal(-i.valor)}</span>
-            </div>
-            <div className="extrato-detalhe">
-              <span>{i.dias} {i.dias === 1 ? 'dia' : 'dias'} sobre {reais(i.base)}, até {diaMes(i.data)}</span>
-              <span>{dataHora(i.criado_em)}</span>
-            </div>
-          </li>
-        ))}
-      </ul>}
-    </section>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function Linha({ rotulo, valor, sinal = true }) {
+  return (
+    <div>
+      <dt>{rotulo}</dt>
+      <dd className={`num ${sinal ? tendencia(valor) : ''}`}>{sinal ? reaisComSinal(valor) : reais(valor)}</dd>
+    </div>
+  );
+}
+
+function Lancamento({ l }) {
+  const classe = l.automatica ? 'extrato-automatica' : l.origem === 'ajuste' ? 'extrato-ajuste' : undefined;
+  return (
+    <li className={classe}>
+      <div className="extrato-linha">
+        <span>
+          <strong>{l.titulo}</strong> {l.ticker && <span className="suave">{l.ticker}</span>}
+        </span>
+        <span className={`num ${l.tipo === 'inicial' ? '' : tendencia(l.efeito)}`}>
+          {l.tipo === 'inicial' ? reais(l.efeito) : reaisComSinal(l.efeito)}
+        </span>
+      </div>
+
+      {l.quantidade > 0 && (
+        <p className="extrato-detalhe"><span>{numero(l.quantidade)} ações × {reais(l.preco)}</span></p>
+      )}
+      {l.partes.length > 1 && (
+        <dl className="extrato-partes">
+          {l.partes.map((p) => (
+            <div key={p.rotulo}><dt>{p.rotulo}</dt><dd className="num">{reaisComSinal(p.valor)}</dd></div>
+          ))}
+        </dl>
+      )}
+      {l.tipo === 'venda_descoberto' && (
+        <p className="extrato-obs">
+          Só a corretagem sai do saldo. Os {reais(l.garantia)} da venda ficam bloqueados como garantia até a recompra.
+        </p>
+      )}
+      {l.tipo === 'aluguel' && (
+        <p className="extrato-obs">{l.dias} {l.dias === 1 ? 'dia' : 'dias'} sobre {reais(l.base)}, até {diaMes(l.ate)}</p>
+      )}
+      {l.obs && <p className="extrato-obs">{l.obs}</p>}
+
+      <div className="extrato-detalhe">
+        <span>{l.quando ? dataHora(l.quando) : ''}</span>
+        <span>Saldo {reais(l.saldo)}</span>
+      </div>
+    </li>
   );
 }

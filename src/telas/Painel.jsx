@@ -10,6 +10,7 @@ import Mercado from './Mercado.jsx';
 import Acao from './Acao.jsx';
 import Carteira from './Carteira.jsx';
 import Turma from './Turma.jsx';
+import Extrato from './Extrato.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
 // Abrir uma ação ou a área do professor empilha no histórico do navegador,
@@ -92,6 +93,7 @@ export default function Painel({ uid }) {
   };
   const fechar = () => window.history.back();
   const abrirAcao = (ticker, operacao) => abrir({ tipo: 'acao', ticker, operacao });
+  const abrirExtrato = () => abrir({ tipo: 'extrato' });
   const trocarAba = (id) => {
     if (sobreposta) window.history.back();
     setAba(id);
@@ -110,14 +112,16 @@ export default function Painel({ uid }) {
       <Acao key={sobreposta.ticker} ticker={sobreposta.ticker} operacaoInicial={sobreposta.operacao}
             dados={dados} aoVoltar={fechar} aoExecutar={aoExecutar} />
     );
+  } else if (sobreposta?.tipo === 'extrato') {
+    conteudo = <Extrato uid={uid} dados={dados} resumo={resumo} versao={versao} aoVoltar={fechar} />;
   } else if (aba === 'inicio') {
     conteudo = <Inicio uid={uid} dados={dados} resumo={resumo} linhas={linhas} versao={versao}
-                       aoEscolher={abrirAcao} irPara={trocarAba} />;
+                       aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;
   } else if (aba === 'mercado') {
     conteudo = <Mercado dados={dados} linhas={linhas} aoEscolher={abrirAcao} />;
   } else if (aba === 'carteira') {
     conteudo = <Carteira uid={uid} dados={dados} resumo={resumo} versao={versao}
-                         aoEscolher={abrirAcao} irPara={trocarAba} />;
+                         aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;
   } else {
     conteudo = <Turma turmaId={dados.perfil.turma_id} turmaNome={dados.perfil.turma} versao={versao} />;
   }

@@ -85,7 +85,7 @@ function criarEstado() {
   const precos = Object.fromEntries(EMPRESAS.map(([t, , , p, a]) => [t, { preco: p, anterior: a }]));
   const s = {
     uid: 'demo-aluno',
-    perfil: { user_id: 'demo-aluno', email: 'ana.souza@isecensa.edu.br', nome: 'Ana Souza', turma: 'ADM 3º período', turma_id: 1, saldo: 10000 },
+    perfil: { user_id: 'demo-aluno', email: 'ana.souza@isecensa.edu.br', nome: 'Ana Souza', turma: 'ADM 3º período', turma_id: 1, saldo: 10000, criado_em: horasAtras(170) },
     precos,
     posicoes: {},   // ticker -> { quantidade, preco_medio }
     vendidas: {},   // ticker -> { quantidade, preco_medio, garantia, aluguel_pago, corretagem_paga, aberta_em }
@@ -114,7 +114,7 @@ function executar(s, ticker, tipo, q, preco, quando = new Date().toISOString()) 
   if (tipo === 'compra') {
     valor_total = bruto + c;
     const p = s.posicoes[ticker] ?? { quantidade: 0, preco_medio: 0 };
-    p.preco_medio = (p.quantidade * p.preco_medio + valor_total) / (p.quantidade + q);
+    p.preco_medio = (p.quantidade * p.preco_medio + bruto) / (p.quantidade + q);   // sem corretagem
     p.quantidade += q;
     s.posicoes[ticker] = p;
     s.perfil.saldo = r2(s.perfil.saldo - valor_total);

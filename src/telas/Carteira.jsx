@@ -1,14 +1,25 @@
+import { useEffect, useState } from 'react';
+import { api } from '../api/index.js';
 import { usoDoStop } from '../lib/regras.js';
 import { numero, pct, reais, reaisComSinal, tendencia } from '../lib/formato.js';
 import Logo from '../componentes/Logo.jsx';
-import Extrato from './Extrato.jsx';
+import Icone from '../componentes/Icone.jsx';
 
 // Cores das fatias por setor (na ordem do maior para o menor)
 const CORES_SETOR = ['var(--verde)', 'var(--azul)', 'var(--ambar)', 'var(--verde-claro-forte)', 'var(--azul-claro)', 'var(--suave)'];
 
-// Patrimônio, distribuição por setor, posições e movimentações
-export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPara }) {
+// Patrimônio, distribuição por setor, posições e atalho para o extrato
+export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPara, aoAbrirExtrato }) {
   const { carteira, vendidas, config } = dados;
+  const [corretagens, setCorretagens] = useState(null);
+
+  useEffect(() => {
+    let vivo = true;
+    api.ordens(uid, 5000)
+      .then((o) => vivo && setCorretagens(o.reduce((s, x) => s + Number(x.corretagem), 0)))
+      .catch(() => {});
+    return () => { vivo = false; };
+  }, [uid, versao]);
   const stop = Number(config.stop_prejuizo ?? 0.8);
   const vazia = carteira.length === 0 && vendidas.length === 0;
 
@@ -34,7 +45,18 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
           {vendidas.length > 0 && (
             <div><dt>Vendas a descoberto</dt><dd className={`num ${tendencia(resumo.vendido)}`}>{reaisComSinal(resumo.vendido)}</dd></div>
           )}
+          {corretagens > 0 && (
+            <div><dt>Corretagens pagas</dt><dd className="num">{reais(corretagens)}</dd></div>
+          )}
         </dl>
+        <button className="atalho" onClick={aoAbrirExtrato}>
+          <Icone nome="extrato" />
+          <span>
+            <strong>Extrato</strong>
+            <small>Todo o fluxo de caixa da sua conta</small>
+          </span>
+          <Icone nome="seta" tamanho={18} />
+        </button>
       </section>
 
       {vazia && (
@@ -132,7 +154,6 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
         </section>
       )}
 
-      <Extrato uid={uid} versao={versao} />
     </div>
   );
 }

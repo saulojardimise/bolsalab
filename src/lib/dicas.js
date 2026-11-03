@@ -9,8 +9,8 @@ export const DICAS = [
     texto: 'R$ 15 numa ordem de R$ 150 já são 10% de custo. Ordens maiores e menos frequentes custam menos.',
   },
   {
-    titulo: 'Preço médio inclui os custos',
-    texto: 'Somamos a corretagem ao preço pago. Por isso uma ação comprada a R$ 40 pode ter preço médio de R$ 40,15.',
+    titulo: 'A corretagem conta no resultado',
+    texto: 'O preço médio mostra só o que você pagou pelas ações. A corretagem de cada ordem sai do saldo: veja quanto já pagou no extrato.',
   },
   {
     titulo: 'Venda a descoberto tem custo diário',
