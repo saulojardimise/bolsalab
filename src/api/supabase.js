@@ -156,6 +156,12 @@ export function criarApi(supabase, { urlRetorno } = {}) {
         .order('publicada_em', { ascending: false }).limit(1000));
     },
 
+    // Ibovespa e CDI para comparar com o patrimônio
+    async indices(desde) {
+      return checar(await supabase.from('indices').select('serie, data, valor').gte('data', desde)
+        .order('data').limit(1000));
+    },
+
     async ranking(turmaId = null) {
       return checar(await supabase.rpc('ranking', { p_turma_id: turmaId }));
     },

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api/index.js';
 import { DICAS, dicaDoDia } from '../lib/dicas.js';
 import { noPeriodo, variacaoSerie } from '../lib/periodos.js';
-import { pct, reais, tendencia } from '../lib/formato.js';
+import { diasAtras, pct, reais, tendencia } from '../lib/formato.js';
 import Grafico from '../componentes/Grafico.jsx';
 import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
@@ -10,18 +10,27 @@ import StatusPregao from '../componentes/StatusPregao.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
 import Termo from '../componentes/Termo.jsx';
 import { montarCapa, quando } from '../lib/noticias.js';
+import { comparar } from '../lib/comparacao.js';
+import Comparativo from '../componentes/Comparativo.jsx';
 
 // Tela inicial: patrimônio com gráfico, saldo, dica do dia e os ativos do aluno
 export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher, irPara, aoAbrirExtrato }) {
   const [serie, setSerie] = useState(null);
   const [periodo, setPeriodo] = useState('1M');
   const [dica, setDica] = useState(dicaDoDia);
+  const [indices, setIndices] = useState([]);
 
   useEffect(() => {
     let vivo = true;
     api.patrimonioDiario(uid).then((s) => vivo && setSerie(s)).catch(() => vivo && setSerie([]));
     return () => { vivo = false; };
   }, [uid, versao]);
+
+  useEffect(() => {
+    let vivo = true;
+    api.indices(diasAtras(400)).then((i) => vivo && setIndices(i)).catch(() => {});
+    return () => { vivo = false; };
+  }, [versao]);
 
   // o último ponto é sempre o patrimônio de agora
   const pontos = useMemo(() => {
@@ -33,6 +42,8 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
   }, [serie, periodo, resumo.patrimonio]);
 
   const variacao = pontos ? variacaoSerie(pontos) : 0;
+  const comparacao = useMemo(() => pontos && comparar(pontos, indices), [pontos, indices]);
+  const temIndices = comparacao && (comparacao.final.ibov != null || comparacao.final.cdi != null);
   const nome = dados.perfil.nome.split(' ')[0] || 'aluno';
   const meus = dados.carteira.map((p) => {
     const m = dados.mercado.find((e) => e.ticker === p.ticker);
@@ -70,6 +81,14 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
           <Icone nome="seta" tamanho={18} />
         </button>
       </section>
+
+      {temIndices && (
+        <section className="cartao" aria-labelledby="titulo-comparacao">
+          <h2 id="titulo-comparacao">Você x Ibovespa x CDI</h2>
+          <p className="suave">Quanto cada um rendeu no mesmo período do gráfico acima ({periodo === 'TUDO' ? 'desde o início' : periodo}).</p>
+          <Comparativo comparacao={comparacao} />
+        </section>
+      )}
 
       <section className="cartao dica" aria-labelledby="titulo-dica" aria-live="polite">
         <span className="dica-icone"><Icone nome="lampada" tamanho={26} /></span>

@@ -309,6 +309,15 @@ export function criarApiDemo() {
         return { data, patrimonio: r2(10000 + (atual - 10000) * t + ruido) };
       });
     },
+    async indices() {
+      await atraso();
+      const rnd = semente('indices');
+      let ibov = 128000;
+      return diasUteis(60).flatMap((data) => {
+        ibov = r2(ibov * (1 + (rnd() - 0.47) * 0.018));
+        return [{ serie: 'IBOV', data, valor: ibov }, { serie: 'CDI', data, valor: 0.055131 }];
+      });
+    },
     async carteira() { await atraso(); return carteira(); },
     async vendidas() { await atraso(); return vendidas(); },
     async ordens() { await atraso(); return estado.ordens.map((o) => ({ ...o })); },

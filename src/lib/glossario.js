@@ -104,6 +104,17 @@ export const GLOSSARIO = {
     texto: 'O registro de todo dinheiro que entrou e saiu do seu saldo: compras, vendas, corretagens, aluguel e ajustes. '
       + 'Somando tudo a partir do saldo inicial, você chega ao saldo disponível de hoje.',
   },
+  ibovespa: {
+    titulo: 'Ibovespa',
+    texto: 'O principal índice da bolsa brasileira: uma carteira teórica com as ações mais negociadas da B3 (as mesmas '
+      + '76 do simulador). Se a sua carteira rendeu menos que o Ibovespa, teria sido melhor comprar "o mercado inteiro".',
+  },
+  cdi: {
+    titulo: 'CDI',
+    texto: 'A taxa dos empréstimos de um dia entre bancos, quase igual à Selic. É a referência da renda fixa: um CDB que '
+      + 'rende "100% do CDI" acompanha essa taxa sem o sobe e desce das ações. Render menos que o CDI significa que '
+      + 'o risco da bolsa não compensou no período.',
+  },
   fato_relevante: {
     titulo: 'Fato relevante',
     texto: 'Comunicado oficial que a empresa é obrigada a divulgar, ao mesmo tempo para todos os investidores, sempre que '
