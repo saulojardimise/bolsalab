@@ -28,6 +28,7 @@
   --ambar: #E3A008;
   --ambar-fundo: #FFF6DB;
   --ambar-texto: #8A5A00;
+  --ajuda: #C2410C;          /* "?" do glossário */
   --foco: #2A5BD7;
   --sobre-verde: #FFFFFF;
   --sombra: 0 1px 2px rgb(16 40 80 / 0.04), 0 6px 20px rgb(16 40 80 / 0.06);
@@ -73,6 +74,7 @@
     --ambar: #F2C14E;
     --ambar-fundo: #3A3012;
     --ambar-texto: #F2C14E;
+    --ajuda: #FB923C;
     --foco: #7FA4FF;
     --sombra: 0 1px 2px rgb(0 0 0 / 0.3);
     --sombra-folha: 0 -10px 40px rgb(0 0 0 / 0.5);
@@ -104,6 +106,7 @@
   --azul-claro: #3E5C9E;
   --azul-fundo: #1A2A4C;
   --ambar: #F2C14E;
+  --ajuda: #FB923C;
   --ambar-texto: #F2C14E;
   --ambar-fundo: #3A3012;
   --foco: #7FA4FF;
@@ -713,3 +716,15 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
   position: absolute; top: 50%; width: 20px; height: 20px; border-radius: 50%; transform: translate(-50%, -50%);
   background: var(--cartao); border: 4px solid var(--marinho);
 }
+
+/* ---------------------------------------------------------------- glossário: "?" ao lado dos termos */
+.botao-termo {
+  display: inline-grid; place-items: center; vertical-align: -0.12em;
+  width: 22px; height: 22px; margin: -4px -3px -4px 2px; padding: 0;
+  border: 0; border-radius: 50%; background: none; color: var(--ajuda); cursor: pointer;
+}
+.botao-termo:hover, .botao-termo:focus-visible { background: var(--fundo); }
+.glossario .glossario-conteudo { display: grid; gap: 12px; padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); }
+.glossario-rotulo { color: var(--ajuda); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.glossario h2 { margin-top: -6px; }
+.glossario-exemplo { background: var(--fundo); border-radius: var(--raio); padding: 10px 12px; font-size: 0.95rem; }

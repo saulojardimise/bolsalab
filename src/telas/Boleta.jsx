@@ -3,6 +3,8 @@ import { api } from '../api/index.js';
 import { previa, TIPOS } from '../lib/regras.js';
 import { numero, reais, reaisComSinal } from '../lib/formato.js';
 import Icone from '../componentes/Icone.jsx';
+import Termo from '../componentes/Termo.jsx';
+import { TERMO_DO_ROTULO } from '../lib/glossario.js';
 
 // Boleta da página da ação.
 // Duas abas (Comprar / Vender) e, dentro delas, a forma da operação:
@@ -74,6 +76,8 @@ export default function Boleta({ ticker, empresa, comprada, vendida, operacaoIni
               <input type="radio" name="forma" value={id} checked={tipo === id} disabled={desativada}
                      onChange={() => { setTipo(id); setErroServidor(''); }} />
               {rotulo}
+              {id === 'venda_descoberto' && <Termo id="venda_descoberto" />}
+              {id === 'recompra' && <Termo id="recompra" />}
             </label>
           ))}
         </fieldset>
@@ -92,7 +96,7 @@ export default function Boleta({ ticker, empresa, comprada, vendida, operacaoIni
 
       <div className="boleta-totais">
         <div>
-          <span className="suave">Preço por ação (fechamento)</span>
+          <span className="suave">Preço por ação (<Termo id="fechamento">fechamento</Termo>)</span>
           <strong className="num">{reais(empresa.preco)}</strong>
         </div>
         <div className="boleta-total">
@@ -103,14 +107,15 @@ export default function Boleta({ ticker, empresa, comprada, vendida, operacaoIni
 
       <dl className="boleta-detalhes">
         {p.linhas.filter((l) => !l.destaque).map((l) => (
-          <div key={l.rotulo}><dt>{l.rotulo}</dt><dd className="num">{reais(l.valor)}</dd></div>
+          <div key={l.rotulo}><dt>{TERMO_DO_ROTULO[l.rotulo] ? <Termo id={TERMO_DO_ROTULO[l.rotulo]}>{l.rotulo}</Termo> : l.rotulo}</dt><dd className="num">{reais(l.valor)}</dd></div>
         ))}
       </dl>
 
       {tipo === 'venda_descoberto' && (
         <p className="nota">
-          Você ganha se o preço cair. O valor da venda fica bloqueado como garantia, o aluguel é cobrado todo dia
-          e a posição é encerrada sozinha se o prejuízo acumulado chegar a 80% do seu saldo disponível.
+          Você ganha se o preço cair. O valor da venda fica bloqueado como <Termo id="garantia">garantia</Termo>,
+          o <Termo id="aluguel">aluguel</Termo> é cobrado todo dia e a posição é{' '}
+          <Termo id="encerramento">encerrada sozinha</Termo> se o prejuízo acumulado chegar a 80% do seu saldo disponível.
         </p>
       )}
 

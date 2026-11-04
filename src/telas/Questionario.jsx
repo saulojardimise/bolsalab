@@ -3,6 +3,7 @@ import { api } from '../api/index.js';
 import { PERFIS, PERGUNTAS } from '../lib/perfilInvestidor.js';
 import Icone from '../componentes/Icone.jsx';
 import Marca from '../componentes/Marca.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // Questionário de perfil de investidor. Obrigatório na primeira vez (o simulador
 // só abre depois dele); depois pode ser refeito pelo perfil.
@@ -40,7 +41,7 @@ export default function Questionario({ obrigatorio, perfilAtual, aoConcluir, aoV
       <main className="questionario">
         <Marca />
         <section className="cartao" aria-labelledby="titulo-resultado">
-          <p className="suave">Seu perfil de investidor</p>
+          <p className="suave"><Termo id="perfil_investidor">Seu perfil de investidor</Termo></p>
           <h1 id="titulo-resultado" className={`perfil-nome perfil-${resultado.perfil}`}>{p.nome}</h1>
           <p className="questionario-resumo">{p.resumo}</p>
           <div className="escala-perfil" aria-label={`${resultado.pontos} pontos, numa escala de 6 a 24`}>
@@ -76,7 +77,7 @@ export default function Questionario({ obrigatorio, perfilAtual, aoConcluir, aoV
           <h1 id="titulo-questionario">Qual é o seu perfil de investidor?</h1>
           <p>
             Antes de recomendar um investimento, toda corretora precisa saber o perfil do cliente.
-            Esse processo se chama <strong>suitability</strong> (adequação) e é exigido pela CVM.
+            Esse processo se chama <strong><Termo id="suitability">suitability</Termo></strong> (adequação) e é exigido pela CVM.
           </p>
           <p>
             São {PERGUNTAS.length} perguntas rápidas. Não existe resposta certa: responda pensando

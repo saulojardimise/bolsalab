@@ -3,6 +3,7 @@ import { api } from '../api/index.js';
 import { fluxoDeCaixa, GRUPOS } from '../lib/fluxo.js';
 import { dataHora, diaMes, numero, reais, reaisComSinal, tendencia } from '../lib/formato.js';
 import Icone from '../componentes/Icone.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // Extrato: o fluxo de caixa completo do aluno. No topo, quanto entrou e saiu
 // por tipo (ações, corretagem, aluguel...); embaixo, cada lançamento com o
@@ -42,23 +43,23 @@ export default function Extrato({ uid, dados, resumo, versao, aoVoltar }) {
 
       {t && (
         <section className="cartao" aria-labelledby="titulo-fluxo">
-          <h2 id="titulo-fluxo">Fluxo de caixa</h2>
+          <h2 id="titulo-fluxo"><Termo id="fluxo_caixa">Fluxo de caixa</Termo></h2>
           <dl className="fluxo">
             <Linha rotulo="Saldo inicial" valor={t.inicial} sinal={false} />
             <Linha rotulo="Pago na compra de ações" valor={t.compras} />
             <Linha rotulo="Recebido na venda de ações" valor={t.vendas} />
-            {t.descoberto !== 0 && <Linha rotulo="Resultado das vendas a descoberto" valor={t.descoberto} />}
-            <Linha rotulo={`Corretagens (${numero(t.ordens)} ${t.ordens === 1 ? 'ordem' : 'ordens'})`} valor={t.corretagens} />
-            {t.aluguel !== 0 && <Linha rotulo="Aluguel de ações" valor={t.aluguel} />}
+            {t.descoberto !== 0 && <Linha rotulo="Resultado das vendas a descoberto" valor={t.descoberto} termo="venda_descoberto" />}
+            <Linha rotulo={`Corretagens (${numero(t.ordens)} ${t.ordens === 1 ? 'ordem' : 'ordens'})`} valor={t.corretagens} termo="corretagem" />
+            {t.aluguel !== 0 && <Linha rotulo="Aluguel de ações" valor={t.aluguel} termo="aluguel" />}
             {t.ajustes !== 0 && <Linha rotulo="Ajustes de eventos das ações" valor={t.ajustes} />}
             <div className="fluxo-total">
-              <dt>Saldo disponível</dt>
+              <dt><Termo id="saldo">Saldo disponível</Termo></dt>
               <dd className="num">{reais(confere ? t.final : resumo.saldo)}</dd>
             </div>
           </dl>
           {resumo.garantias > 0 && (
             <p className="nota">
-              Fora do saldo: {reais(resumo.garantias)} bloqueados como garantia das vendas a descoberto.
+              Fora do saldo: {reais(resumo.garantias)} bloqueados como <Termo id="garantia">garantia</Termo> das vendas a descoberto.
               Eles voltam ao saldo na recompra.
             </p>
           )}
@@ -89,10 +90,10 @@ export default function Extrato({ uid, dados, resumo, versao, aoVoltar }) {
   );
 }
 
-function Linha({ rotulo, valor, sinal = true }) {
+function Linha({ rotulo, valor, sinal = true, termo }) {
   return (
     <div>
-      <dt>{rotulo}</dt>
+      <dt>{termo ? <Termo id={termo}>{rotulo}</Termo> : rotulo}</dt>
       <dd className={`num ${sinal ? tendencia(valor) : ''}`}>{sinal ? reaisComSinal(valor) : reais(valor)}</dd>
     </div>
   );

@@ -7,6 +7,7 @@ import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
 import Logo from '../componentes/Logo.jsx';
 import Boleta from './Boleta.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // Página de uma ação: preço, gráfico, informações do dia, últimos fechamentos e boleta.
 export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecutar }) {
@@ -75,12 +76,12 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
 
         <dl className="estatisticas">
-          <div><dt>Abertura</dt><dd className="num">{empresa.abertura ? reais(empresa.abertura) : '–'}</dd></div>
-          <div><dt>Máxima</dt><dd className="num">{empresa.maxima ? reais(empresa.maxima) : '–'}</dd></div>
-          <div><dt>Mínima</dt><dd className="num">{empresa.minima ? reais(empresa.minima) : '–'}</dd></div>
-          <div><dt>Fechamento</dt><dd className="num">{reais(empresa.preco)}</dd></div>
-          <div><dt>Variação</dt><dd className={`num ${tendencia(empresa.variacao_pct)}`}>{empresa.variacao_pct != null ? pct(empresa.variacao_pct) : '–'}</dd></div>
-          <div><dt>Volume</dt><dd className="num">{empresa.volume ? volume(empresa.volume) : '–'}</dd></div>
+          <div><dt><Termo id="abertura">Abertura</Termo></dt><dd className="num">{empresa.abertura ? reais(empresa.abertura) : '–'}</dd></div>
+          <div><dt><Termo id="maxima">Máxima</Termo></dt><dd className="num">{empresa.maxima ? reais(empresa.maxima) : '–'}</dd></div>
+          <div><dt><Termo id="minima">Mínima</Termo></dt><dd className="num">{empresa.minima ? reais(empresa.minima) : '–'}</dd></div>
+          <div><dt><Termo id="fechamento">Fechamento</Termo></dt><dd className="num">{reais(empresa.preco)}</dd></div>
+          <div><dt><Termo id="variacao">Variação</Termo></dt><dd className={`num ${tendencia(empresa.variacao_pct)}`}>{empresa.variacao_pct != null ? pct(empresa.variacao_pct) : '–'}</dd></div>
+          <div><dt><Termo id="volume">Volume</Termo></dt><dd className="num">{empresa.volume ? volume(empresa.volume) : '–'}</dd></div>
         </dl>
       </section>
 
@@ -88,14 +89,14 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
         <section className="cartao posicao-resumo" aria-label="Sua posição">
           {comprada && (
             <p>
-              Você tem <strong>{numero(comprada.quantidade)}</strong> ações, preço médio {reais(comprada.preco_medio)}.{' '}
+              Você tem <strong>{numero(comprada.quantidade)}</strong> ações, <Termo id="preco_medio">preço médio</Termo> {reais(comprada.preco_medio)}.{' '}
               <span className={tendencia(comprada.resultado)}>{reaisComSinal(comprada.resultado)} ({pct(comprada.resultado_pct)})</span>
             </p>
           )}
           {vendida && (
             <p>
-              Você está vendido em <strong>{numero(vendida.quantidade)}</strong> ações a {reais(vendida.preco_venda)}.{' '}
-              <span className={tendencia(vendida.resultado_acumulado)}>Resultado acumulado {reaisComSinal(vendida.resultado_acumulado)}</span>
+              Você está <Termo id="venda_descoberto">vendido</Termo> em <strong>{numero(vendida.quantidade)}</strong> ações a {reais(vendida.preco_venda)}.{' '}
+              <span className={tendencia(vendida.resultado_acumulado)}>Resultado acumulado {reaisComSinal(vendida.resultado_acumulado)}</span> <Termo id="resultado_acumulado" />
             </p>
           )}
         </section>

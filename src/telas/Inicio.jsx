@@ -8,12 +8,12 @@ import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
 import StatusPregao from '../componentes/StatusPregao.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // Tela inicial: patrimônio com gráfico, saldo, dica do dia e os ativos do aluno
 export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher, irPara, aoAbrirExtrato }) {
   const [serie, setSerie] = useState(null);
   const [periodo, setPeriodo] = useState('1M');
-  const [explicar, setExplicar] = useState(false);
   const [dica, setDica] = useState(dicaDoDia);
 
   useEffect(() => {
@@ -47,19 +47,7 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
       </section>
 
       <section className="cartao" aria-labelledby="titulo-patrimonio">
-        <div className="cartao-titulo">
-          <h2 id="titulo-patrimonio">Patrimônio virtual</h2>
-          <button className="botao-icone" aria-expanded={explicar} aria-controls="explica-patrimonio"
-                  onClick={() => setExplicar(!explicar)} aria-label="O que é o patrimônio virtual">
-            <Icone nome="info" tamanho={18} />
-          </button>
-        </div>
-        {explicar && (
-          <p id="explica-patrimonio" className="explicacao">
-            Saldo em dinheiro + ações compradas pelo preço de fechamento + resultado das vendas a descoberto.
-            Você começou com {reais(dados.config.saldo_inicial)}.
-          </p>
-        )}
+        <h2 id="titulo-patrimonio"><Termo id="patrimonio">Patrimônio virtual</Termo></h2>
         <p className="valor-grande num">{reais(resumo.patrimonio)}</p>
         <p className={`variacao-periodo ${tendencia(variacao)}`}>
           <Icone nome={variacao >= 0 ? 'subida' : 'descida'} tamanho={18} />
@@ -69,7 +57,7 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
         <div className="linha-saldo">
           <Icone nome="saldo" />
-          <span>Saldo disponível</span>
+          <span><Termo id="saldo">Saldo disponível</Termo></span>
           <strong className="num">{reais(resumo.saldo)}</strong>
         </div>
         <button className="atalho" onClick={aoAbrirExtrato}>

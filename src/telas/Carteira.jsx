@@ -4,6 +4,7 @@ import { usoDoStop } from '../lib/regras.js';
 import { numero, pct, reais, reaisComSinal, tendencia } from '../lib/formato.js';
 import Logo from '../componentes/Logo.jsx';
 import Icone from '../componentes/Icone.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // Cores das fatias por setor (na ordem do maior para o menor)
 const CORES_SETOR = ['var(--verde)', 'var(--azul)', 'var(--ambar)', 'var(--verde-claro-forte)', 'var(--azul-claro)', 'var(--suave)'];
@@ -33,20 +34,21 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
       <h1>Carteira</h1>
 
       <section className="cartao" aria-label="Resumo">
-        <p className="suave">Patrimônio virtual</p>
+        <p className="suave"><Termo id="patrimonio">Patrimônio virtual</Termo></p>
         <p className="valor-grande num">{reais(resumo.patrimonio)}</p>
         <p className={`variacao-periodo ${tendencia(resumo.rentabilidade)}`}>
           <strong className="num">{pct(resumo.rentabilidade)}</strong>
           <span className="suave">desde o início ({reais(config.saldo_inicial)})</span>
+          <Termo id="rentabilidade" />
         </p>
         <dl className="resumo-linhas">
-          <div><dt>Saldo disponível</dt><dd className="num">{reais(resumo.saldo)}</dd></div>
+          <div><dt><Termo id="saldo">Saldo disponível</Termo></dt><dd className="num">{reais(resumo.saldo)}</dd></div>
           <div><dt>Ações compradas</dt><dd className="num">{reais(resumo.acoes)}</dd></div>
           {vendidas.length > 0 && (
-            <div><dt>Vendas a descoberto</dt><dd className={`num ${tendencia(resumo.vendido)}`}>{reaisComSinal(resumo.vendido)}</dd></div>
+            <div><dt><Termo id="venda_descoberto">Vendas a descoberto</Termo></dt><dd className={`num ${tendencia(resumo.vendido)}`}>{reaisComSinal(resumo.vendido)}</dd></div>
           )}
           {corretagens > 0 && (
-            <div><dt>Corretagens pagas</dt><dd className="num">{reais(corretagens)}</dd></div>
+            <div><dt><Termo id="corretagem">Corretagens pagas</Termo></dt><dd className="num">{reais(corretagens)}</dd></div>
           )}
         </dl>
         <button className="atalho" onClick={aoAbrirExtrato}>
@@ -68,7 +70,7 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
 
       {porSetor.length > 0 && (
         <section className="cartao" aria-labelledby="titulo-setores">
-          <h2 id="titulo-setores">Por setor</h2>
+          <h2 id="titulo-setores"><Termo id="setor">Por setor</Termo></h2>
           <div className="barra-setores" aria-hidden="true">
             {porSetor.map(([s, v], i) => (
               <span key={s} style={{ flexGrow: v, background: CORES_SETOR[i % CORES_SETOR.length] }} />
@@ -91,7 +93,7 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
 
       {carteira.length > 0 && (
         <section aria-labelledby="titulo-compradas">
-          <h2 id="titulo-compradas" className="secao-titulo">Ações compradas</h2>
+          <h2 id="titulo-compradas" className="secao-titulo">Ações compradas <Termo id="preco_medio" /></h2>
           <ul className="cartao cartao-lista posicoes">
             {carteira.map((p) => (
               <li key={p.ticker}>
@@ -114,7 +116,7 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
 
       {vendidas.length > 0 && (
         <section aria-labelledby="titulo-vendidas">
-          <h2 id="titulo-vendidas" className="secao-titulo">Vendas a descoberto</h2>
+          <h2 id="titulo-vendidas" className="secao-titulo"><Termo id="venda_descoberto">Vendas a descoberto</Termo></h2>
           <ul className="cartao cartao-lista posicoes">
             {vendidas.map((v) => {
               const s = usoDoStop(v, resumo.saldo, stop);
@@ -148,8 +150,9 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
             })}
           </ul>
           <p className="nota">
-            Resultado acumulado = valor da venda − custo de recompra hoje − aluguel pago − corretagem.
-            Garantia bloqueada: {reais(resumo.garantias)}.
+            <Termo id="resultado_acumulado">Resultado acumulado</Termo> = valor da venda − custo de recompra hoje − aluguel pago − corretagem.
+            {' '}<Termo id="garantia">Garantia bloqueada</Termo>: {reais(resumo.garantias)}.
+            {' '}<Termo id="encerramento">Encerramento automático</Termo> com prejuízo de {Math.round(stop * 100)}% do saldo.
           </p>
         </section>
       )}

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { diaMes } from '../lib/formato.js';
 import Icone from '../componentes/Icone.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
+import Termo from '../componentes/Termo.jsx';
 
 // As ações do Ibovespa com o último fechamento
 export default function Mercado({ dados, linhas, aoEscolher }) {
@@ -24,7 +25,7 @@ export default function Mercado({ dados, linhas, aoEscolher }) {
     <div className="pilha">
       <div className="secao-topo">
         <h1>Mercado</h1>
-        {dataRef && <p className="suave">Fechamento de {diaMes(dataRef)}</p>}
+        {dataRef && <p className="suave"><Termo id="fechamento">Fechamento</Termo> de {diaMes(dataRef)}</p>}
       </div>
 
       <div className="filtros">

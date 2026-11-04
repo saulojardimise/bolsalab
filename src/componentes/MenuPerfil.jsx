@@ -6,6 +6,7 @@ import { PERFIS } from '../lib/perfilInvestidor.js';
 import Icone from './Icone.jsx';
 import Avatar from './Avatar.jsx';
 import TrocarSenha from './TrocarSenha.jsx';
+import Termo from './Termo.jsx';
 
 const dataBR = (ts) => new Date(ts).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
@@ -121,13 +122,13 @@ export default function MenuPerfil({ perfil, resumo, aoFechar, aoSair, aoMudarFo
                 <dd><span className="num">{numeros.posicao.lugar}º</span> <small>de {numeros.posicao.de}</small></dd>
               </div>
             )}
-            <div><dt>Patrimônio</dt><dd className="num">{reais(resumo.patrimonio)}</dd></div>
+            <div><dt><Termo id="patrimonio">Patrimônio</Termo></dt><dd className="num">{reais(resumo.patrimonio)}</dd></div>
             <div>
-              <dt>Rentabilidade desde o início</dt>
+              <dt><Termo id="rentabilidade">Rentabilidade desde o início</Termo></dt>
               <dd className={`num ${tendencia(resumo.rentabilidade)}`}>{pct(resumo.rentabilidade)}</dd>
             </div>
             <div><dt>Ordens</dt><dd className="num">{numeros ? numero(numeros.ordens) : '…'}</dd></div>
-            <div><dt>Corretagens pagas</dt><dd className="num">{numeros ? reais(numeros.corretagens) : '…'}</dd></div>
+            <div><dt><Termo id="corretagem">Corretagens pagas</Termo></dt><dd className="num">{numeros ? reais(numeros.corretagens) : '…'}</dd></div>
             <div>
               <dt>Ação favorita</dt>
               <dd>
@@ -140,7 +141,7 @@ export default function MenuPerfil({ perfil, resumo, aoFechar, aoSair, aoMudarFo
         </section>
 
         <section className="perfil-bloco" aria-labelledby="perfil-investidor">
-          <h3 id="perfil-investidor">Perfil de investidor</h3>
+          <h3 id="perfil-investidor"><Termo id="perfil_investidor">Perfil de investidor</Termo></h3>
           {tipo ? (
             <div className="perfil-investidor">
               <span className={`chip-perfil perfil-${perfil.perfil_investidor}`}>{tipo.nome}</span>
