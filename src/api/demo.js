@@ -373,6 +373,16 @@ export function criarApiDemo() {
       return gestao.alunos.filter((a) => a.turma_id === id).sort((a, b) => b.patrimonio - a.patrimonio)
         .map((a, i) => ({ ...a, posicao: i + 1, rentabilidade_pct: r2((a.patrimonio / 10000 - 1) * 100) }));
     },
+    async excluirTurma(id, apagarAlunos = false) {
+      await atraso();
+      const t = gestao.turmas.find((x) => x.id === id);
+      const n = gestao.alunos.filter((a) => a.turma_id === id).length;
+      gestao.turmas = gestao.turmas.filter((x) => x.id !== id);
+      gestao.alunos = apagarAlunos
+        ? gestao.alunos.filter((a) => a.turma_id !== id)
+        : gestao.alunos.map((a) => (a.turma_id === id ? { ...a, turma_id: null } : a));
+      return { turma: t.nome, alunos_apagados: apagarAlunos ? n : 0, alunos_sem_turma: apagarAlunos ? 0 : n };
+    },
     async definirPausa(p) { gestao.pausada = p; return p; },
     async alertas() { await atraso(); return gestao.alertas.map((a) => ({ ...a })); },
     async resolverAlerta(id) { gestao.alertas = gestao.alertas.filter((a) => a.id !== id); },

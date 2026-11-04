@@ -626,6 +626,12 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .regra-outro { margin-left: 30px; width: calc(100% - 30px) !important; }
 
 .confirmacao { display: grid; gap: 10px; padding: 14px; border-radius: var(--raio); background: var(--ambar-fundo); }
+.confirmacao-perigo { background: var(--vermelho-fundo); }
+.confirmacao-perigo .opcao-radio { align-items: flex-start; }
+.confirmacao-perigo .opcao-radio input { margin-top: 2px; flex: none; accent-color: var(--vermelho); }
+.links-linha { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.botao-perigo { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+.botao-perigo:disabled { opacity: 0.45; }
 
 .ranking-gestor .ranking-nome small { line-height: 1.35; }
 

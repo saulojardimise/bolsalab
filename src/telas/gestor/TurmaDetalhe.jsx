@@ -11,6 +11,7 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
   const [alunos, setAlunos] = useState(null);
   const [editando, setEditando] = useState(false);
   const [confirmarToken, setConfirmarToken] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
   const [erro, setErro] = useState('');
   const [versao, setVersao] = useState(0);
 
@@ -36,6 +37,17 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
       setVersao((v) => v + 1);
       avisar(`Token novo: ${token}. O antigo não vale mais.`);
     } catch (e) { setErro(e.message); }
+  }
+
+  async function excluir(apagarAlunos) {
+    try {
+      const r = await api.excluirTurma(id, apagarAlunos);
+      const extra = r.alunos_apagados > 0
+        ? ` ${r.alunos_apagados} ${r.alunos_apagados === 1 ? 'conta apagada' : 'contas apagadas'}.`
+        : r.alunos_sem_turma > 0 ? ` ${r.alunos_sem_turma} ${r.alunos_sem_turma === 1 ? 'aluno ficou' : 'alunos ficaram'} sem turma.` : '';
+      avisar(`Turma ${r.turma} excluída.${extra}`);
+      aoVoltar();
+    } catch (e) { setErro(e.message); setExcluindo(false); }
   }
 
   return (
@@ -67,9 +79,16 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
               {turma.ativa ? 'Fechar cadastros' : 'Abrir cadastros'}
             </button>
           </div>
-          {!confirmarToken ? (
-            <button className="link" onClick={() => setConfirmarToken(true)}>Gerar token novo</button>
-          ) : (
+          {!confirmarToken && !excluindo && (
+            <div className="links-linha">
+              <button className="link" onClick={() => setConfirmarToken(true)}>Gerar token novo</button>
+              <button className="link link-perigo" onClick={() => setExcluindo(true)}>Excluir turma</button>
+            </div>
+          )}
+          {excluindo && (
+            <ExcluirTurma turma={turma} aoCancelar={() => setExcluindo(false)} aoExcluir={excluir} />
+          )}
+          {confirmarToken && (
             <div className="confirmacao" role="alert">
               <p>O token atual deixa de funcionar para novos cadastros. Quem já entrou continua na turma.</p>
               <div className="botoes-linha">
@@ -113,6 +132,54 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
           )}
         </section>
       )}
+    </div>
+  );
+}
+
+// Confirmação da exclusão. Com alunos, o gestor escolhe se as contas ficam
+// (sem turma) ou são apagadas; apagar exige digitar o nome da turma.
+function ExcluirTurma({ turma, aoCancelar, aoExcluir }) {
+  const n = Number(turma.alunos);
+  const [apagar, setApagar] = useState(false);
+  const [nome, setNome] = useState('');
+  const [enviando, setEnviando] = useState(false);
+  const liberado = !apagar || nome.trim().toLowerCase() === turma.nome.trim().toLowerCase();
+  const alunos = n === 1 ? '1 aluno' : `${n} alunos`;
+
+  async function confirmar() {
+    setEnviando(true);
+    await aoExcluir(apagar);
+    setEnviando(false);
+  }
+
+  return (
+    <div className="confirmacao confirmacao-perigo" role="alert">
+      <p><strong>Excluir a turma {turma.nome}?</strong> O token {turma.token} deixa de funcionar.</p>
+      {n > 0 && (
+        <fieldset className="regra-email">
+          <legend>O que fazer com {n === 1 ? 'a conta do aluno' : `as contas dos ${alunos}`}?</legend>
+          <label className="opcao-radio">
+            <input type="radio" name="excluir-alunos" checked={!apagar} onChange={() => setApagar(false)} />
+            <span>Manter. {n === 1 ? 'Ele continua' : 'Eles continuam'} jogando, com carteira e histórico, mas sem turma.</span>
+          </label>
+          <label className="opcao-radio">
+            <input type="radio" name="excluir-alunos" checked={apagar} onChange={() => setApagar(true)} />
+            <span>Apagar também. Some tudo: carteira, ordens e histórico. Não tem volta.</span>
+          </label>
+        </fieldset>
+      )}
+      {apagar && (
+        <label className="campo">
+          <span>Para confirmar, digite o nome da turma</span>
+          <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder={turma.nome} autoComplete="off" />
+        </label>
+      )}
+      <div className="botoes-linha">
+        <button className="botao" onClick={aoCancelar} disabled={enviando}>Cancelar</button>
+        <button className="botao botao-perigo" onClick={confirmar} disabled={!liberado || enviando}>
+          {enviando ? 'Excluindo…' : apagar ? `Excluir e apagar ${alunos}` : 'Excluir turma'}
+        </button>
+      </div>
     </div>
   );
 }

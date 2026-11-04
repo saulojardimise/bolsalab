@@ -209,6 +209,10 @@ export function criarApi(supabase, { urlRetorno } = {}) {
     async alunosTurma(id) {
       return checar(await supabase.rpc('alunos_turma', { p_turma_id: id }));
     },
+    // apagarAlunos = true apaga também as contas dos alunos da turma
+    async excluirTurma(id, apagarAlunos = false) {
+      return checar(await supabase.rpc('excluir_turma', { p_id: id, p_apagar_alunos: apagarAlunos }));
+    },
     async definirPausa(pausada) {
       return checar(await supabase.rpc('definir_pausa', { p_pausada: pausada }));
     },
