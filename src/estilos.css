@@ -728,3 +728,36 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .glossario-rotulo { color: var(--ajuda); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .glossario h2 { margin-top: -6px; }
 .glossario-exemplo { background: var(--fundo); border-radius: var(--raio); padding: 10px 12px; font-size: 0.95rem; }
+
+/* ---------------------------------------------------------------- notícias */
+.filtros-linha { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 8px; }
+.seletor select { width: 100%; }
+.noticias { padding-top: 2px; padding-bottom: 2px; }
+.noticias > .noticia + .noticia { border-top: 1px solid var(--linha); }
+.noticia { display: flex; gap: 14px; padding: 14px 0; align-items: flex-start; }
+.noticia-corpo { display: grid; gap: 6px; min-width: 0; flex: 1; }
+.noticia-titulo { color: var(--marinho); text-decoration: none; }
+.noticia-titulo h3 { font-size: 1rem; line-height: 1.35; font-weight: 700; margin: 0; }
+.noticia-titulo:hover h3, .noticia-titulo:focus-visible h3 { text-decoration: underline; }
+.noticia-grande { padding: 4px 0 0; }
+.noticia-grande .noticia-titulo h3 { font-size: 1.3rem; line-height: 1.3; font-weight: 800; }
+.manchete { gap: 8px; }
+.noticia-chapeu { color: var(--ajuda); font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.noticia-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--suave); font-size: 0.84rem; }
+.noticia-empresas { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-acao {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 999px;
+  border: 1px solid var(--linha); background: var(--fundo); font-size: 0.82rem; color: var(--marinho); cursor: pointer;
+}
+.chip-acao .logo { width: 20px; height: 20px; }
+.chip-acao .num { font-weight: 700; }
+.noticia-grande .chip-acao { padding-left: 10px; }
+.chip-acao-mini { padding: 1px 8px; font-weight: 700; }
+.chip-oficial {
+  padding: 1px 8px; border-radius: 999px; background: var(--azul-fundo); color: var(--azul);
+  font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.destaques li { display: grid; gap: 6px; padding: 12px 0; }
+.destaques li + li { border-top: 1px solid var(--linha); }
+.destaques a { color: var(--marinho); font-weight: 700; text-decoration: none; line-height: 1.35; }
+.destaques a:hover { text-decoration: underline; }

@@ -9,6 +9,7 @@ import Icone from '../componentes/Icone.jsx';
 import StatusPregao from '../componentes/StatusPregao.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
 import Termo from '../componentes/Termo.jsx';
+import { montarCapa, quando } from '../lib/noticias.js';
 
 // Tela inicial: patrimônio com gráfico, saldo, dica do dia e os ativos do aluno
 export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher, irPara, aoAbrirExtrato }) {
@@ -85,6 +86,8 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
         </button>
       </section>
 
+      <Destaques mercado={dados.mercado} aoEscolher={aoEscolher} irPara={irPara} />
+
       <section aria-labelledby="titulo-meus">
         <div className="secao-topo">
           <h2 id="titulo-meus">Meus ativos</h2>
@@ -100,5 +103,43 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
         )}
       </section>
     </div>
+  );
+}
+
+// Destaques do dia: as 3 primeiras chamadas da capa de notícias
+function Destaques({ mercado, aoEscolher, irPara }) {
+  const [noticias, setNoticias] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    api.noticias(3).then((n) => vivo && setNoticias(n)).catch(() => vivo && setNoticias([]));
+    return () => { vivo = false; };
+  }, []);
+  const lista = useMemo(() => {
+    if (!noticias?.length) return [];
+    const c = montarCapa(noticias, mercado);
+    return [c.manchete, ...c.chamadas, ...c.mercado].filter(Boolean).slice(0, 3);
+  }, [noticias, mercado]);
+  if (!lista.length) return null;
+
+  return (
+    <section aria-labelledby="titulo-destaques">
+      <div className="secao-topo">
+        <h2 id="titulo-destaques">Destaques do dia</h2>
+        <button className="link-acao" onClick={() => irPara('noticias')}>Ver todas <Icone nome="seta" tamanho={16} /></button>
+      </div>
+      <ul className="cartao cartao-lista destaques">
+        {lista.map((n) => (
+          <li key={n.id}>
+            <a href={n.link} target="_blank" rel="noopener noreferrer">{n.titulo}</a>
+            <span className="noticia-meta">
+              {n.tickers[0] && (
+                <button className="chip-acao chip-acao-mini" onClick={() => aoEscolher(n.tickers[0])}>{n.tickers[0]}</button>
+              )}
+              <span>{n.fonte} · {quando(n.publicada_em)}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

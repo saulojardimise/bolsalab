@@ -149,6 +149,13 @@ export function criarApi(supabase, { urlRetorno } = {}) {
         .order('criado_em', { ascending: false }).limit(limite));
     },
 
+    // Notícias dos últimos dias (a capa e os filtros são montados no app)
+    async noticias(dias = 7) {
+      const desde = new Date(Date.now() - dias * 86400e3).toISOString();
+      return checar(await supabase.from('noticias').select('*').gte('publicada_em', desde)
+        .order('publicada_em', { ascending: false }).limit(1000));
+    },
+
     async ranking(turmaId = null) {
       return checar(await supabase.rpc('ranking', { p_turma_id: turmaId }));
     },

@@ -12,6 +12,7 @@ import Carteira from './Carteira.jsx';
 import Turma from './Turma.jsx';
 import Extrato from './Extrato.jsx';
 import Questionario from './Questionario.jsx';
+import Noticias from './Noticias.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
 // Abrir uma ação ou a área do professor empilha no histórico do navegador,
@@ -134,6 +135,8 @@ export default function Painel({ uid }) {
                        aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;
   } else if (aba === 'mercado') {
     conteudo = <Mercado dados={dados} linhas={linhas} aoEscolher={abrirAcao} />;
+  } else if (aba === 'noticias') {
+    conteudo = <Noticias dados={dados} aoEscolher={abrirAcao} />;
   } else if (aba === 'carteira') {
     conteudo = <Carteira uid={uid} dados={dados} resumo={resumo} versao={versao}
                          aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;

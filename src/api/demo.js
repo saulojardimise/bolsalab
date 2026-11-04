@@ -321,6 +321,29 @@ export function criarApiDemo() {
       return url;
     },
     async removerFoto() { estado.perfil.foto_url = null; },
+    async noticias() {
+      await atraso();
+      const n = (id, tipo, titulo, tickers, horas) => ({
+        id, tipo, titulo, tickers, fonte: tipo === 'fato_relevante' ? 'CVM' : 'Jornal de exemplo',
+        link: 'https://example.com/', publicada_em: horasAtras(horas), coletada_em: horasAtras(1),
+      });
+      return [
+        n(1, 'mercado', 'Ibovespa fecha em alta puxado por bancos e petroleiras', ['ITUB4', 'PETR4'], 2),
+        n(2, 'empresa', 'Petrobras anuncia novo plano de investimentos para os próximos cinco anos', ['PETR4', 'PETR3'], 3),
+        n(3, 'fato_relevante', 'Fato relevante: Aprovação de pagamento de juros sobre capital próprio', ['ITUB4'], 5),
+        n(4, 'empresa', 'Magazine Luiza tem queda nas vendas on-line no trimestre', ['MGLU3'], 4),
+        n(5, 'mercado', 'Dólar recua e fecha abaixo de R$ 5,50 com fluxo estrangeiro', [], 2.5),
+        n(6, 'empresa', 'WEG fecha contrato de exportação de motores elétricos', ['WEGE3'], 6),
+        n(7, 'empresa', 'Vale eleva produção de minério de ferro no terceiro trimestre', ['VALE3'], 8),
+        n(8, 'mercado', 'Copom mantém a Selic e sinaliza cautela com a inflação', [], 20),
+        n(9, 'empresa', 'Itaú Unibanco supera expectativas e lucra mais no trimestre', ['ITUB4'], 9),
+        n(10, 'empresa', 'Banco do Brasil revisa projeções para a carteira de crédito', ['BBAS3'], 26),
+        n(11, 'empresa', 'Ambev lança nova marca e aposta em bebidas sem álcool', ['ABEV3'], 30),
+        n(12, 'fato_relevante', 'Fato relevante: Aquisição de participação em empresa de energia', ['EQTL3'], 28),
+        n(13, 'empresa', 'Localiza amplia frota e prevê demanda maior nas férias', ['RENT3'], 40),
+        n(14, 'empresa', 'Suzano conclui manutenção em fábrica e retoma produção', ['SUZB3'], 50),
+      ].sort((a, b) => b.publicada_em.localeCompare(a.publicada_em));
+    },
     async ranking(turmaId) {
       await atraso();
       const v = vendidas().reduce((s, x) => s + x.resultado, 0);

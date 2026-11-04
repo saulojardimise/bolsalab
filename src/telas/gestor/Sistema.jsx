@@ -50,7 +50,7 @@ export default function Sistema({ email, avisar }) {
       )}
 
       <section aria-labelledby="titulo-coletas">
-        <h2 id="titulo-coletas" className="secao-titulo">Coletas de cotações</h2>
+        <h2 id="titulo-coletas" className="secao-titulo">Coletas de cotações e notícias</h2>
         {coletas?.length === 0 && <p className="cartao vazio">Nenhuma coleta registrada ainda.</p>}
         {coletas?.length > 0 && (
           <ul className="cartao cartao-lista extrato">
@@ -61,7 +61,7 @@ export default function Sistema({ email, avisar }) {
                   <span className={c.com_erro ? 'baixa' : 'alta'}>{c.com_erro ? `${c.com_erro} com erro` : 'Tudo certo'}</span>
                 </div>
                 <div className="extrato-detalhe">
-                  <span>{c.gravadas} de {c.total} cotações gravadas</span>
+                  <span>{c.origem?.startsWith('notícias') ? `${c.gravadas} notícias novas, ${c.total} lidas` : `${c.gravadas} de ${c.total} cotações gravadas`}</span>
                   <span>{c.origem}</span>
                 </div>
                 {c.erros?.length > 0 && (

@@ -2,6 +2,7 @@
 const DESENHOS = {
   inicio: <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" />,
   mercado: <path d="M6 20v-6M12 20V8M18 20V4" />,
+  noticias: <><path d="M5 4h11a1 1 0 0 1 1 1v14a1 1 0 0 0 2 0V9h-2" /><path d="M19 20H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1" /><path d="M8 8h5M8 11.5h5M8 15h3" /></>,
   carteira: <><path d="M12 3a9 9 0 1 0 9 9h-9z" /><path d="M15 3.5A9 9 0 0 1 20.5 9H15z" /></>,
   turma: <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.6c2.4-.3 4.2 1.2 4.6 4.4" /></>,
   voltar: <path d="M15 5l-7 7 7 7" />,

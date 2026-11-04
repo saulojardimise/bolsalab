@@ -4,6 +4,7 @@ import Icone from './Icone.jsx';
 const ABAS = [
   ['inicio', 'Início'],
   ['mercado', 'Mercado'],
+  ['noticias', 'Notícias'],
   ['carteira', 'Carteira'],
   ['turma', 'Turma'],
 ];

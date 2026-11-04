@@ -104,6 +104,12 @@ export const GLOSSARIO = {
     texto: 'O registro de todo dinheiro que entrou e saiu do seu saldo: compras, vendas, corretagens, aluguel e ajustes. '
       + 'Somando tudo a partir do saldo inicial, você chega ao saldo disponível de hoje.',
   },
+  fato_relevante: {
+    titulo: 'Fato relevante',
+    texto: 'Comunicado oficial que a empresa é obrigada a divulgar, ao mesmo tempo para todos os investidores, sempre que '
+      + 'acontece algo que pode mexer no preço das ações: resultados, fusões, aquisições, dividendos, mudança de comando. '
+      + 'É publicado na CVM e é a fonte mais confiável, antes de qualquer jornal.',
+  },
   suitability: {
     titulo: 'Suitability',
     texto: 'Em português, "adequação". É a obrigação das corretoras de conhecer o perfil do cliente (objetivos, prazo, '
