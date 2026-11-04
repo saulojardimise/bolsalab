@@ -59,3 +59,9 @@ test('fora da página: vagas, promoções e atendimento; manchete só de veícul
   assert.deepEqual(c.resto.map((x) => x.id), [4]);           // site desconhecido: só em "Mais notícias"
   assert.deepEqual(filtrar(lista, { empresas: mercado }).map((x) => x.id), [4, 5]);
 });
+
+test('relevância: "oferta de ações" fica; "ofertas da semana" sai', async () => {
+  const { relevante } = await import('../src/lib/noticias.js');
+  assert.equal(relevante({ titulo: 'Embraer faz oferta de ações de R$ 2 bi' }), true);
+  assert.equal(relevante({ titulo: 'Assaí: as ofertas da semana' }), false);
+});

@@ -13,6 +13,7 @@ import Turma from './Turma.jsx';
 import Extrato from './Extrato.jsx';
 import Questionario from './Questionario.jsx';
 import Noticias from './Noticias.jsx';
+import CompletarFoto, { fotoAdiada } from './CompletarFoto.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
 // Abrir uma ação ou a área do professor empilha no histórico do navegador,
@@ -26,6 +27,7 @@ export default function Painel({ uid }) {
   const [erro, setErro] = useState('');
   const [recado, setRecado] = useState('');
   const [versao, setVersao] = useState(0);
+  const [fotoVista, setFotoVista] = useState(false);   // já mostrou o convite da foto nesta visita
 
   const carregar = useCallback(async () => {
     try {
@@ -99,6 +101,18 @@ export default function Painel({ uid }) {
     );
   }
 
+  const mudarFoto = (foto_url) => setDados((d) => ({ ...d, perfil: { ...d.perfil, foto_url } }));
+
+  // Depois do questionário: convite para pôr a foto (pode deixar para depois)
+  if (!fotoVista && !dados.perfil.foto_url && !fotoAdiada(uid)) {
+    return (
+      <div className="painel">
+        {api.modoDemo && <p className="faixa-demo">Demonstração com preços fictícios</p>}
+        <CompletarFoto perfil={dados.perfil} aoMudarFoto={mudarFoto} aoConcluir={() => setFotoVista(true)} />
+      </div>
+    );
+  }
+
   const abrir = (s) => {
     window.history.pushState({ sobreposta: s }, '');
     setSobreposta(s);
@@ -160,7 +174,7 @@ export default function Painel({ uid }) {
           aoRefazerPerfil={() => { setPerfilAberto(false); abrir({ tipo: 'questionario' }); }}
           aoFechar={() => setPerfilAberto(false)}
           aoSair={() => api.sair()}
-          aoMudarFoto={(foto_url) => setDados((d) => ({ ...d, perfil: { ...d.perfil, foto_url } }))}
+          aoMudarFoto={mudarFoto}
         />
       )}
       {recado && <p className="recado" role="status">{recado}</p>}

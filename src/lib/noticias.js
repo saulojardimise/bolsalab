@@ -9,7 +9,7 @@ const sem = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCas
 const FORA = new RegExp([
   '\\bvagas?\\b', 'emprego', 'cadastro para', 'abre cadastro', 'curriculo', 'salario', 'quanto ganha', 'requisitos',
   'trabalhe', 'estagio', 'jovem aprendiz', 'concurso', 'processo seletivo', 'contrata\\b', 'contratando',
-  'black friday', 'cupo(m|ns)', 'descontos?\\b', 'promocao', 'promocoes', 'ofertas?\\b', 'liquidacao', 'frete gratis',
+  'black friday', 'cupo(m|ns)', 'descontos?\\b', 'promocao', 'promocoes', 'ofertas?\\b(?! (de acoes|publica|primaria|secundaria|subsequente|de recompra|vinculante|hostil|pela|por|de compra))', 'liquidacao', 'frete gratis',
   'cashback', 'sorteio', 'horario de funcionamento', 'abre no feriado', 'funciona no feriado', 'como cancelar',
   '\\bgolpe', 'receita de\\b', 'horoscopo',
 ].join('|'));
