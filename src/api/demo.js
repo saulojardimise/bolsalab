@@ -331,7 +331,7 @@ export function criarApiDemo() {
       ].filter(([, t]) => !turmaId || t === turmaId).sort((a, b) => b[2] - a[2]);
       return lista.map(([nome, t, patrimonio, eu], i) => ({
         posicao: i + 1, nome, turma: gestao.turmas.find((x) => x.id === t)?.nome ?? '', patrimonio,
-        rentabilidade_pct: r2((patrimonio / 10000 - 1) * 100), eu,
+        rentabilidade_pct: r2((patrimonio / 10000 - 1) * 100), eu, foto_url: eu ? estado.perfil.foto_url ?? null : null,
       }));
     },
     async negociacaoLiberada() { return !gestao.pausada && !params.has('fechado'); },

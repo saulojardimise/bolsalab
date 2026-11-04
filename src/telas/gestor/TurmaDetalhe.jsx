@@ -3,6 +3,7 @@ import { api } from '../../api/index.js';
 import { dataHora, pct, reais, tendencia } from '../../lib/formato.js';
 import Icone from '../../componentes/Icone.jsx';
 import Copiar from '../../componentes/Copiar.jsx';
+import Avatar from '../../componentes/Avatar.jsx';
 import RegraEmail, { textoRegra } from './RegraEmail.jsx';
 import { PERFIS } from '../../lib/perfilInvestidor.js';
 
@@ -115,6 +116,7 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
               {alunos.map((a) => (
                 <li key={a.user_id}>
                   <span className="ranking-pos num">{a.posicao}º</span>
+                  <Avatar foto={a.foto_url} tamanho={40} />
                   <span className="ranking-nome">
                     <strong>{a.nome || 'Sem nome'}</strong>
                     <small>{a.email}</small>

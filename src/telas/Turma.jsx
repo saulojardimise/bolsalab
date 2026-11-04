@@ -1,3 +1,4 @@
+import Avatar from '../componentes/Avatar.jsx';
 import { useEffect, useState } from 'react';
 import { api } from '../api/index.js';
 import { pct, reais, tendencia } from '../lib/formato.js';
@@ -50,6 +51,7 @@ export default function Turma({ turmaId, turmaNome, versao }) {
           {lista.map((r, i) => (
             <li key={i} className={r.eu ? 'eu' : undefined}>
               <span className="ranking-pos num">{r.posicao}º</span>
+              <Avatar foto={r.foto_url} tamanho={40} />
               <span className="ranking-nome">
                 <strong>{r.nome || 'Sem nome'}</strong>
                 {!soTurma && r.turma && <small>{r.turma}</small>}
