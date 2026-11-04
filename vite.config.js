@@ -39,6 +39,8 @@ const pwa = VitePWA({
 export default defineConfig({
   base: arquivoUnico ? './' : base,
   plugins: arquivoUnico ? [react(), viteSingleFile()] : [react(), pwa],
+  // na prévia (sem PWA) o registro do service worker vira um arquivo vazio
+  resolve: arquivoUnico ? { alias: { 'virtual:pwa-register': '/src/sem-pwa.js' } } : {},
   build: arquivoUnico
     ? { outDir: 'dist-previa', assetsInlineLimit: 1e9, copyPublicDir: false }
     : {},
