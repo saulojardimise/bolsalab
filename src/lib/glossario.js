@@ -56,9 +56,12 @@ export const GLOSSARIO = {
       + 'O limite existe porque o prejuízo de uma venda a descoberto não tem teto: o preço pode subir sem parar.',
   },
   resultado_acumulado: {
-    titulo: 'Resultado acumulado',
-    texto: 'Quanto a venda a descoberto está dando de lucro ou prejuízo até agora: valor da venda, menos o custo para '
-      + 'recomprar hoje, menos o aluguel e a corretagem já pagos.',
+    titulo: 'Prejuízo com custos',
+    texto: 'Na venda a descoberto, o resultado mostrado é só o efeito do preço: valor da venda menos o custo para recomprar hoje. '
+      + 'Para o encerramento automático, o simulador soma também o aluguel e a corretagem já pagos, '
+      + 'porque eles também saíram do seu saldo.',
+    exemplo: 'Vendeu por R$ 2.000, recomprar hoje custa R$ 2.100 (−R$ 100) e já pagou R$ 15 de corretagem e R$ 6 de aluguel: '
+      + 'prejuízo com custos de R$ 121.',
   },
   encerramento: {
     titulo: 'Encerramento automático',

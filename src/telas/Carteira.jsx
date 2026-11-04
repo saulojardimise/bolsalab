@@ -129,14 +129,17 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
                       <span>{numero(v.quantidade)} vendidas a {reais(v.preco_venda)}, hoje {reais(v.preco_atual)}</span>
                     </span>
                     <span className="posicao-valor">
-                      <strong className={`num ${tendencia(v.resultado_acumulado)}`}>{reaisComSinal(v.resultado_acumulado)}</strong>
-                      <span className="suave">aluguel pago {reais(v.aluguel_pago)}</span>
+                      <strong className="num">{reais(v.custo_recompra)}</strong>
+                      <span className={`num ${tendencia(v.resultado)}`}>
+                        {reaisComSinal(v.resultado)} ({pct(Number(v.garantia) > 0 ? (v.resultado / v.garantia) * 100 : 0)})
+                      </span>
                     </span>
                     <span className="stop">
                       <span>
+                        Custos pagos: corretagem {reais(v.corretagem_paga)}, aluguel {reais(v.aluguel_pago)}.{' '}
                         {s.prejuizo > 0
-                          ? <>Prejuízo acumulado de {reais(s.prejuizo)}. Encerra sozinha em {reais(s.limite)}.</>
-                          : <>Sem prejuízo acumulado. Encerra sozinha se o prejuízo chegar a {reais(s.limite)}.</>}
+                          ? <>Prejuízo com custos de {reais(s.prejuizo)}. Encerra sozinha em {reais(s.limite)}.</>
+                          : <>Encerra sozinha se o prejuízo com custos chegar a {reais(s.limite)}.</>}
                       </span>
                       <span className={`stop-barra ${s.uso >= 0.75 ? 'stop-alerta' : ''}`} role="meter"
                             aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(Math.min(1, s.uso) * 100)}
@@ -150,7 +153,8 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
             })}
           </ul>
           <p className="nota">
-            <Termo id="resultado_acumulado">Resultado acumulado</Termo> = valor da venda − custo de recompra hoje − aluguel pago − corretagem.
+            Resultado = valor da venda − custo para recomprar hoje (sem custos, como nas ações compradas).
+            {' '}O <Termo id="resultado_acumulado">prejuízo com custos</Termo> soma também aluguel e corretagem.
             {' '}<Termo id="garantia">Garantia bloqueada</Termo>: {reais(resumo.garantias)}.
             {' '}<Termo id="encerramento">Encerramento automático</Termo> com prejuízo de {Math.round(stop * 100)}% do saldo.
           </p>

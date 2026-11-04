@@ -10,6 +10,9 @@ import Boleta from './Boleta.jsx';
 import Termo from '../componentes/Termo.jsx';
 
 // Página de uma ação: preço, gráfico, informações do dia, últimos fechamentos e boleta.
+// Resultado da venda a descoberto em % do valor vendido (sem custos, como nas ações compradas)
+const resultadoPct = (v) => (Number(v.garantia) > 0 ? (Number(v.resultado) / Number(v.garantia)) * 100 : 0);
+
 export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecutar }) {
   const empresa = dados.mercado.find((e) => e.ticker === ticker);
   const comprada = dados.carteira.find((p) => p.ticker === ticker);
@@ -96,7 +99,15 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
           {vendida && (
             <p>
               Você está <Termo id="venda_descoberto">vendido</Termo> em <strong>{numero(vendida.quantidade)}</strong> ações a {reais(vendida.preco_venda)}.{' '}
-              <span className={tendencia(vendida.resultado_acumulado)}>Resultado acumulado {reaisComSinal(vendida.resultado_acumulado)}</span> <Termo id="resultado_acumulado" />
+              <span className={tendencia(vendida.resultado)}>
+                {reaisComSinal(vendida.resultado)} ({pct(resultadoPct(vendida))})
+              </span>
+            </p>
+          )}
+          {vendida && (
+            <p className="nota">
+              Custos já pagos: corretagem {reais(vendida.corretagem_paga)} e <Termo id="aluguel">aluguel</Termo> {reais(vendida.aluguel_pago)}.
+              Eles saíram do saldo e contam no <Termo id="encerramento">encerramento automático</Termo>.
             </p>
           )}
         </section>
