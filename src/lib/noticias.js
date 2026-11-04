@@ -2,6 +2,31 @@
 
 const HORA = 3600e3;
 
+const sem = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+// Manchetes que não interessam ao investidor: vagas de emprego, promoções para
+// o consumidor, atendimento, golpes etc. Ficam de fora da página.
+const FORA = new RegExp([
+  '\\bvagas?\\b', 'emprego', 'cadastro para', 'abre cadastro', 'curriculo', 'salario', 'quanto ganha', 'requisitos',
+  'trabalhe', 'estagio', 'jovem aprendiz', 'concurso', 'processo seletivo', 'contrata\\b', 'contratando',
+  'black friday', 'cupo(m|ns)', 'descontos?\\b', 'promocao', 'promocoes', 'ofertas?\\b', 'liquidacao', 'frete gratis',
+  'cashback', 'sorteio', 'horario de funcionamento', 'abre no feriado', 'funciona no feriado', 'como cancelar',
+  '\\bgolpe', 'receita de\\b', 'horoscopo',
+].join('|'));
+export const relevante = (n) => !FORA.test(sem(n.titulo));
+
+// Veículos de economia e grandes jornais: só eles disputam a manchete e as chamadas.
+// Notícias de outros sites continuam em "Mais notícias" e nos filtros.
+const CONFIAVEIS = [
+  'infomoney', 'valor', 'money times', 'exame', 'estadao', 'e-investidor', 'folha', 'o globo', 'g1', 'cnn',
+  'bloomberg', 'brazil journal', 'seu dinheiro', 'suno', 'investing', 'reuters', 'investnews', 'times brasil',
+  'neofeed', 'poder360', 'uol', 'veja', 'istoe dinheiro', 'forbes', 'bp money', 'mais retorno', 'monitor do mercado',
+  'advfn', 'trademap', 'eu quero investir', 'status invest', 'cvm', 'agencia brasil', 'cnn brasil', 'band',
+  'correio braziliense', 'estado de minas', 'gazeta do povo', 'xp investimentos', 'btg pactual', 'genial investimentos',
+  'jornal de exemplo',   // manchetes da demonstração
+];
+export const confiavel = (n) => n.tipo === 'fato_relevante' || CONFIAVEIS.some((c) => sem(n.fonte ?? '').includes(c));
+
 /** "há 5 min", "há 3 h", "ontem", "02/11" */
 export function quando(iso, agora = new Date()) {
   const d = new Date(iso);
@@ -32,7 +57,8 @@ export function nota(n, porTicker, variacao, agora = new Date()) {
  * @param {object[]} noticias  da tabela noticias (mais recentes primeiro)
  * @param {object[]} mercado   visão mercado (ticker, variacao_pct...)
  */
-export function montarCapa(noticias, mercado, agora = new Date()) {
+export function montarCapa(todas, mercado, agora = new Date()) {
+  const noticias = todas.filter(relevante);
   const variacao = Object.fromEntries(mercado.map((e) => [e.ticker, e.variacao_pct]));
   const porTicker = {};
   for (const n of noticias) {
@@ -41,7 +67,7 @@ export function montarCapa(noticias, mercado, agora = new Date()) {
   }
 
   const empresas = noticias
-    .filter((n) => n.tipo !== 'mercado' && n.tickers.length > 0)
+    .filter((n) => n.tipo !== 'mercado' && n.tickers.length > 0 && confiavel(n))
     .map((n) => ({ n, nota: nota(n, porTicker, variacao, agora) }))
     .sort((a, b) => b.nota - a.nota);
 
@@ -56,7 +82,7 @@ export function montarCapa(noticias, mercado, agora = new Date()) {
   }
 
   const naCapa = new Set(chamadas.map((n) => n.id));
-  const mercadoGeral = noticias.filter((n) => n.tipo === 'mercado').slice(0, 4);
+  const mercadoGeral = noticias.filter((n) => n.tipo === 'mercado' && confiavel(n)).slice(0, 4);
   mercadoGeral.forEach((n) => naCapa.add(n.id));
   const fatos = noticias.filter((n) => n.tipo === 'fato_relevante' && !naCapa.has(n.id)).slice(0, 4);
   fatos.forEach((n) => naCapa.add(n.id));
@@ -79,6 +105,7 @@ export function filtrar(noticias, { filtro = '', setor = '', busca = '', minhas 
     : null;
   const meus = new Set(minhas);
   return noticias.filter((n) => {
+    if (!relevante(n)) return false;
     if (filtro === 'minhas' && !n.tickers.some((t) => meus.has(t))) return false;
     if (filtro === 'mercado' && n.tipo !== 'mercado') return false;
     if (filtro === 'fatos' && n.tipo !== 'fato_relevante') return false;

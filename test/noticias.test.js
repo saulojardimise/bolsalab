@@ -5,7 +5,7 @@ import { filtrar, montarCapa, quando } from '../src/lib/noticias.js';
 
 const agora = new Date('2026-11-04T01:00:00Z');
 const h = (horas) => new Date(agora - horas * 3600e3).toISOString();
-const n = (id, tipo, tickers, horas, titulo = `Notícia ${id}`) => ({ id, tipo, tickers, publicada_em: h(horas), titulo });
+const n = (id, tipo, tickers, horas, titulo = `Notícia ${id}`) => ({ id, tipo, tickers, publicada_em: h(horas), titulo, fonte: 'InfoMoney' });
 const mercado = [
   { ticker: 'PETR4', nome: 'Petrobras', setor: 'Petróleo e Gás', variacao_pct: 0.5 },
   { ticker: 'MGLU3', nome: 'Magazine Luiza', setor: 'Varejo', variacao_pct: -6.2 },
@@ -43,4 +43,19 @@ test('quando: minutos, horas, ontem e data', () => {
   assert.equal(quando(h(3), agora), 'há 3 h');
   assert.equal(quando(h(26), agora), 'ontem');
   assert.equal(quando('2026-10-30T15:00:00Z', agora), '30/10');
+});
+
+test('fora da página: vagas, promoções e atendimento; manchete só de veículo confiável', () => {
+  const lista = [
+    { ...n(1, 'empresa', ['HAPV3'], 1, 'Hapvida abre cadastro para Assistente Administrativo; veja requisitos e benefícios'), fonte: 'Empregos na Bahia' },
+    { ...n(2, 'empresa', ['MGLU3'], 1, 'Black Friday antecipada: Magalu libera R$ 125 milhões em cupons'), fonte: 'NSC Total' },
+    { ...n(3, 'empresa', ['ASAI3'], 1, 'Quanto ganha um padeiro de supermercado no Assaí'), fonte: 'Portal 6' },
+    { ...n(4, 'empresa', ['VALE3'], 1, 'Vale eleva produção de minério'), fonte: 'Blog qualquer' },
+    { ...n(5, 'empresa', ['PETR4'], 2, 'Petrobras reduz preço do diesel'), fonte: 'InfoMoney' },
+  ];
+  const c = montarCapa(lista, mercado, agora);
+  assert.equal(c.manchete.id, 5);
+  assert.deepEqual(c.chamadas.map((x) => x.id), []);
+  assert.deepEqual(c.resto.map((x) => x.id), [4]);           // site desconhecido: só em "Mais notícias"
+  assert.deepEqual(filtrar(lista, { empresas: mercado }).map((x) => x.id), [4, 5]);
 });
