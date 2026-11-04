@@ -85,7 +85,7 @@ function criarEstado() {
   const precos = Object.fromEntries(EMPRESAS.map(([t, , , p, a]) => [t, { preco: p, anterior: a }]));
   const s = {
     uid: 'demo-aluno',
-    perfil: { user_id: 'demo-aluno', email: 'ana.souza@isecensa.edu.br', nome: 'Ana Souza', turma: 'ADM 3º período', turma_id: 1, saldo: 10000, criado_em: horasAtras(170) },
+    perfil: { user_id: 'demo-aluno', email: 'ana.souza@isecensa.edu.br', nome: 'Ana Souza', turma: 'ADM 3º período', turma_id: 1, saldo: 10000, criado_em: horasAtras(170), perfil_investidor: null },
     precos,
     posicoes: {},   // ticker -> { quantidade, preco_medio }
     vendidas: {},   // ticker -> { quantidade, preco_medio, garantia, aluguel_pago, corretagem_paga, aberta_em }
@@ -163,8 +163,9 @@ function tokenAleatorio() {
 
 // Turmas, alunos e alertas fictícios da área do gestor
 function criarGestao() {
-  const aluno = (nome, turma_id, patrimonio, ordens, dominio = 'isecensa.edu.br') => ({
+  const aluno = (nome, turma_id, patrimonio, ordens, dominio = 'isecensa.edu.br', perfil = null, pratica = null, descoberto = 0, acoes = 60) => ({
     user_id: nome, nome, turma_id, patrimonio, saldo: r2(patrimonio * 0.35), ordens,
+    perfil_investidor: perfil, perfil_pratica: pratica, vendas_descoberto: descoberto, acoes_pct: acoes,
     email: nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(' ', '.') + '@' + dominio,
     ultima_ordem: horasAtras(ordens * 7), criado_em: horasAtras(300),
   });
@@ -176,10 +177,14 @@ function criarGestao() {
       { id: 3, nome: 'Finanças UFF', token: 'UFF7-H3RT', dominio_email: 'id.uff.br', ativa: false, criada_em: horasAtras(200) },
     ],
     alunos: [
-      aluno('Bruno Lima', 1, 10612.4, 9), aluno('Carla Menezes', 1, 10388.1, 6), aluno('Eduarda Prates', 1, 9978.35, 4),
-      aluno('Gabriela Tavares', 1, 9433.9, 12), aluno('Ana Souza', 1, 10148.92, 6),
-      aluno('Diego Rocha', 2, 10251.0, 5), aluno('Felipe Arruda', 2, 9711.2, 3),
-      aluno('Helena Castro', 3, 10044.0, 2, 'id.uff.br'),
+      aluno('Bruno Lima', 1, 10612.4, 9, undefined, 'arrojado', 'arrojado', 2, 85),
+      aluno('Carla Menezes', 1, 10388.1, 6, undefined, 'moderado', 'moderado', 0, 55),
+      aluno('Eduarda Prates', 1, 9978.35, 4, undefined, 'conservador', 'conservador', 0, 30),
+      aluno('Gabriela Tavares', 1, 9433.9, 12, undefined, 'conservador', 'arrojado', 3, 70),
+      aluno('Ana Souza', 1, 10148.92, 6, undefined, 'moderado', 'arrojado', 1, 55),
+      aluno('Diego Rocha', 2, 10251.0, 5, undefined, 'moderado', 'arrojado', 0, 92),
+      aluno('Felipe Arruda', 2, 9711.2, 3),
+      aluno('Helena Castro', 3, 10044.0, 2, 'id.uff.br', 'arrojado', 'moderado', 0, 48),
     ],
     alertas: [
       { id: 2, tipo: 'variacao_brusca', ticker: 'BBDC4', criado_em: horasAtras(3), alunos: 2,
@@ -256,6 +261,18 @@ export function criarApiDemo() {
     async sair() { logado = false; gestor = false; estado = criarEstado(); gestao = criarGestao(); avisar('SIGNED_OUT'); },
     async recuperarSenha() { await atraso(300); },
     async definirNovaSenha() { await atraso(300); },
+    async trocarSenha(email, atual, nova) {
+      await atraso(300);
+      if (atual.length < 6) throw new Error('A senha atual está incorreta.');
+    },
+    async definirPerfilInvestidor(respostas) {
+      await atraso(300);
+      const pontos = respostas.reduce((a, b) => a + b, 0);
+      const perfil = pontos <= 11 ? 'conservador' : pontos <= 18 ? 'moderado' : 'arrojado';
+      Object.assign(estado.perfil, { perfil_investidor: perfil, perfil_pontos: pontos, perfil_respostas: respostas,
+                                     perfil_em: new Date().toISOString() });
+      return { perfil, pontos };
+    },
 
     async perfil() { await atraso(); return { ...estado.perfil }; },
     async config() { return { ...CONFIG, negociacao_pausada: gestao.pausada }; },

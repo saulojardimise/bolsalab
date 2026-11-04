@@ -83,6 +83,18 @@ export function criarApi(supabase, { urlRetorno } = {}) {
       return { precisaConfirmar: !data.session, turma: turma.turma };
     },
 
+    // Confere a senha atual (entrando de novo) antes de gravar a nova
+    async trocarSenha(email, atual, nova) {
+      const { error: e1 } = await supabase.auth.signInWithPassword({ email, password: atual });
+      if (e1) throw new Error('A senha atual está incorreta.');
+      const { error } = await supabase.auth.updateUser({ password: nova });
+      if (error) throw traduzir(error);
+    },
+
+    async definirPerfilInvestidor(respostas) {
+      return checar(await supabase.rpc('definir_perfil_investidor', { p_respostas: respostas }));
+    },
+
     async sair() {
       await supabase.auth.signOut();
     },

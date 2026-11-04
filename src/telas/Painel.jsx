@@ -11,6 +11,7 @@ import Acao from './Acao.jsx';
 import Carteira from './Carteira.jsx';
 import Turma from './Turma.jsx';
 import Extrato from './Extrato.jsx';
+import Questionario from './Questionario.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
 // Abrir uma ação ou a área do professor empilha no histórico do navegador,
@@ -86,6 +87,17 @@ export default function Painel({ uid }) {
     );
   }
 
+  // Sem perfil de investidor: o questionário vem antes de tudo
+  // (undefined = banco ainda sem o SQL 010; aí o app segue sem exigir)
+  if (dados.perfil.perfil_investidor === null) {
+    return (
+      <div className="painel">
+        {api.modoDemo && <p className="faixa-demo">Demonstração com preços fictícios</p>}
+        <Questionario obrigatorio aoConcluir={carregar} />
+      </div>
+    );
+  }
+
   const abrir = (s) => {
     window.history.pushState({ sobreposta: s }, '');
     setSobreposta(s);
@@ -112,6 +124,9 @@ export default function Painel({ uid }) {
       <Acao key={sobreposta.ticker} ticker={sobreposta.ticker} operacaoInicial={sobreposta.operacao}
             dados={dados} aoVoltar={fechar} aoExecutar={aoExecutar} />
     );
+  } else if (sobreposta?.tipo === 'questionario') {
+    conteudo = <Questionario perfilAtual={dados.perfil.perfil_investidor} aoVoltar={fechar}
+                             aoConcluir={async () => { await carregar(); fechar(); setRecado('Perfil de investidor atualizado.'); }} />;
   } else if (sobreposta?.tipo === 'extrato') {
     conteudo = <Extrato uid={uid} dados={dados} resumo={resumo} versao={versao} aoVoltar={fechar} />;
   } else if (aba === 'inicio') {
@@ -137,6 +152,9 @@ export default function Painel({ uid }) {
       {perfilAberto && (
         <MenuPerfil
           perfil={dados.perfil}
+          resumo={resumo}
+          avisar={setRecado}
+          aoRefazerPerfil={() => { setPerfilAberto(false); abrir({ tipo: 'questionario' }); }}
           aoFechar={() => setPerfilAberto(false)}
           aoSair={() => api.sair()}
           aoMudarFoto={(foto_url) => setDados((d) => ({ ...d, perfil: { ...d.perfil, foto_url } }))}

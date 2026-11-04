@@ -4,6 +4,7 @@ import { dataHora, pct, reais, tendencia } from '../../lib/formato.js';
 import Icone from '../../componentes/Icone.jsx';
 import Copiar from '../../componentes/Copiar.jsx';
 import RegraEmail, { textoRegra } from './RegraEmail.jsx';
+import { PERFIS } from '../../lib/perfilInvestidor.js';
 
 // Uma turma: token, regra de e-mail, cadastros abertos/fechados e o ranking dos alunos
 export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
@@ -121,6 +122,7 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
                       {a.ordens} {Number(a.ordens) === 1 ? 'ordem' : 'ordens'}
                       {a.ultima_ordem ? `, a última em ${dataHora(a.ultima_ordem)}` : ''}
                     </small>
+                    <PerfilAluno a={a} />
                   </span>
                   <span className="ranking-valor">
                     <strong className={`num ${tendencia(a.rentabilidade_pct)}`}>{pct(a.rentabilidade_pct)}</strong>
@@ -130,9 +132,35 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
               ))}
             </ol>
           )}
+          {alunos.length > 0 && (
+            <p className="nota">
+              Perfil na prática: arrojado se fez venda a descoberto ou tem mais de 80% do patrimônio em ações;
+              moderado acima de 40%; conservador no resto. A faixa amarela marca quem age diferente do que declarou.
+            </p>
+          )}
         </section>
       )}
     </div>
+  );
+}
+
+// Perfil declarado no questionário x perfil pelo que o aluno faz na carteira
+function PerfilAluno({ a }) {
+  if (!a.perfil_investidor) return <span className="perfis-aluno"><span className="chip-perfil">Sem questionário</span></span>;
+  const diverge = a.perfil_pratica && a.perfil_pratica !== a.perfil_investidor;
+  const motivo = Number(a.vendas_descoberto) > 0
+    ? `${a.vendas_descoberto} ${Number(a.vendas_descoberto) === 1 ? 'venda' : 'vendas'} a descoberto`
+    : `${String(a.acoes_pct).replace('.', ',')}% em ações`;
+  return (
+    <span className={`perfis-aluno ${diverge ? 'perfis-divergem' : ''}`}>
+      <span className={`chip-perfil perfil-${a.perfil_investidor}`}>Declarado: {PERFIS[a.perfil_investidor].nome}</span>
+      {a.perfil_pratica && (
+        <span className={`chip-perfil perfil-${a.perfil_pratica}`} title={motivo}>
+          Na prática: {PERFIS[a.perfil_pratica].nome}
+        </span>
+      )}
+      {a.perfil_pratica && <small>{motivo}</small>}
+    </span>
   );
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/index.js';
 import { dataHora } from '../../lib/formato.js';
 import Icone from '../../componentes/Icone.jsx';
+import TrocarSenha from '../../componentes/TrocarSenha.jsx';
 
 // Negociação (pausar/liberar), coletas de cotações e conta do gestor
 export default function Sistema({ email, avisar }) {
@@ -9,6 +10,7 @@ export default function Sistema({ email, avisar }) {
   const [coletas, setColetas] = useState(null);
   const [erro, setErro] = useState('');
   const [versao, setVersao] = useState(0);
+  const [trocandoSenha, setTrocandoSenha] = useState(false);
 
   useEffect(() => {
     Promise.all([api.config(), api.coletas()])
@@ -74,6 +76,12 @@ export default function Sistema({ email, avisar }) {
       <section className="cartao" aria-labelledby="titulo-conta">
         <h2 id="titulo-conta">Conta</h2>
         <p className="suave">{email}</p>
+        {trocandoSenha ? (
+          <TrocarSenha email={email} aoCancelar={() => setTrocandoSenha(false)}
+                       aoConcluir={() => { setTrocandoSenha(false); avisar('Senha alterada.'); }} />
+        ) : (
+          <button className="botao" onClick={() => setTrocandoSenha(true)}><Icone nome="chave" tamanho={18} />Trocar senha</button>
+        )}
         <button className="botao" onClick={() => api.sair()}><Icone nome="sair" tamanho={18} />Sair da conta</button>
       </section>
     </div>
