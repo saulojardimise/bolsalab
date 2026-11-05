@@ -118,17 +118,17 @@ export default function TurmaDetalhe({ id, aoVoltar, avisar }) {
                   <span className="ranking-pos num">{a.posicao}º</span>
                   <Avatar foto={a.foto_url} tamanho={40} />
                   <span className="ranking-nome">
-                    <strong>{a.nome || 'Sem nome'}</strong>
-                    <small>{a.email}</small>
+                    <span className="aluno-topo">
+                      <strong>{a.nome || 'Sem nome'}</strong>
+                      <strong className={`num ${tendencia(a.rentabilidade_pct)}`}>{pct(a.rentabilidade_pct)}</strong>
+                    </span>
+                    <small className="aluno-email">{a.email}</small>
                     <small>
-                      {a.ordens} {Number(a.ordens) === 1 ? 'ordem' : 'ordens'}
+                      Patrimônio <span className="num">{reais(a.patrimonio)}</span>
+                      {' · '}{a.ordens} {Number(a.ordens) === 1 ? 'ordem' : 'ordens'}
                       {a.ultima_ordem ? `, a última em ${dataHora(a.ultima_ordem)}` : ''}
                     </small>
                     <PerfilAluno a={a} />
-                  </span>
-                  <span className="ranking-valor">
-                    <strong className={`num ${tendencia(a.rentabilidade_pct)}`}>{pct(a.rentabilidade_pct)}</strong>
-                    <small className="num">{reais(a.patrimonio)}</small>
                   </span>
                 </li>
               ))}

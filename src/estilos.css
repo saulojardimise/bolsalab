@@ -783,3 +783,14 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .legenda-traco { display: block; width: 22px; height: 4px; border-radius: 2px; }
 .legenda-traco.serie-cdi { background: repeating-linear-gradient(90deg, var(--ambar) 0 6px, transparent 6px 9px); }
 .comparativo-frase { font-weight: 650; color: var(--marinho); font-size: 0.95rem; }
+
+/* lista de alunos do gestor: nome e % na mesma linha, o resto embaixo (sem sobrepor no celular) */
+.ranking-gestor li { grid-template-columns: 30px 40px minmax(0, 1fr); align-items: start; }
+.ranking-gestor .ranking-pos, .ranking-gestor .avatar { margin-top: 2px; }
+.ranking-gestor .ranking-nome { gap: 2px; }
+.aluno-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.aluno-topo strong:first-child { min-width: 0; overflow-wrap: anywhere; }
+.aluno-topo .num { flex: none; }
+.aluno-email { overflow-wrap: anywhere; }
+.ranking-gestor .perfis-aluno { margin-top: 6px; }
+.chip-perfil { white-space: normal; max-width: 100%; }
