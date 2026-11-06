@@ -122,7 +122,7 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
           <p className="nota">Os candles usam abertura, máxima e mínima {ativo === 'WIN' ? 'do Ibovespa' : 'dos boletins da PTAX'}, que começam a ser gravadas agora: os dias antigos aparecem como um traço.</p>
         )}
         {ativo === 'WDO' && tipoGrafico === 'candles' && temVelas && (
-          <p className="nota">No mini dólar, cada vela vai do boletim de abertura da PTAX (10h) ao fechamento (13h), com a máxima e a mínima dos boletins do dia. Por isso as velas são curtas.</p>
+          <p className="nota">No mini dólar, o corpo de cada vela vai da PTAX do dia anterior à PTAX do dia, e os pavios mostram a máxima e a mínima do dólar comercial no dia todo.</p>
         )}
         <p className="nota">
           Preço do simulador: {ativo === 'WIN'
