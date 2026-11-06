@@ -225,6 +225,9 @@ export function criarApi(supabase, { urlRetorno } = {}) {
       return checar(await supabase.from('futuros_ajustes').select('*').eq('user_id', uid)
         .order('criado_em', { ascending: false }).limit(limite));
     },
+    async marcarAvisoVisto(aviso) {
+      return checar(await supabase.rpc('marcar_aviso_visto', { p_aviso: aviso }));
+    },
     async executarFuturo(ativo, lado, quantidade) {
       return checar(await supabase.rpc('executar_ordem_futuro', { p_ativo: ativo, p_lado: lado, p_quantidade: quantidade }));
     },

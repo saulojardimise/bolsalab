@@ -14,6 +14,7 @@ import Extrato from './Extrato.jsx';
 import Questionario from './Questionario.jsx';
 import Noticias from './Noticias.jsx';
 import Futuro from './Futuro.jsx';
+import AvisoNovidade, { AVISO_MINICONTRATOS, deveMostrarAviso, lembrarAvisoLocal } from '../componentes/AvisoNovidade.jsx';
 import CompletarFoto, { fotoAdiada } from './CompletarFoto.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
@@ -28,7 +29,8 @@ export default function Painel({ uid }) {
   const [erro, setErro] = useState('');
   const [recado, setRecado] = useState('');
   const [versao, setVersao] = useState(0);
-  const [fotoVista, setFotoVista] = useState(false);   // já mostrou o convite da foto nesta visita
+  const [fotoVista, setFotoVista] = useState(false);
+  const [avisoFechado, setAvisoFechado] = useState(false);   // já mostrou o convite da foto nesta visita
 
   const carregar = useCallback(async () => {
     try {
@@ -131,6 +133,20 @@ export default function Painel({ uid }) {
     window.scrollTo({ top: 0 });
   };
 
+  // Aviso de novidade (uma vez por aluno; some depois de fechado)
+  const mostrarAviso = !avisoFechado && !sobreposta && !perfilAberto && deveMostrarAviso(dados.perfil);
+  const fecharAviso = () => {
+    setAvisoFechado(true);
+    lembrarAvisoLocal(uid);
+    api.marcarAvisoVisto(AVISO_MINICONTRATOS).catch(() => {});
+    setDados((d) => ({ ...d, perfil: { ...d.perfil, avisos_vistos: [...(d.perfil.avisos_vistos ?? []), AVISO_MINICONTRATOS] } }));
+  };
+  const conhecerMinicontratos = () => {
+    fecharAviso();
+    if (dados.futurosMercado?.some((f) => f.ativo === 'WIN' && f.preco != null)) abrirFuturo('WIN');
+    else trocarAba('mercado');
+  };
+
   const aoExecutar = async (mensagem) => {
     setRecado(mensagem);
     await carregar();
@@ -182,6 +198,9 @@ export default function Painel({ uid }) {
           aoSair={() => api.sair()}
           aoMudarFoto={mudarFoto}
         />
+      )}
+      {mostrarAviso && (
+        <AvisoNovidade futuros={dados.futurosMercado} aoFechar={fecharAviso} aoConhecer={conhecerMinicontratos} />
       )}
       {recado && <p className="recado" role="status">{recado}</p>}
     </div>

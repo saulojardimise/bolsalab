@@ -339,6 +339,7 @@ export function criarApiDemo() {
     async futurosPosicoes() { await atraso(); return estado.futuros.map((f) => ({ ...f })); },
     async futurosOrdens() { await atraso(); return [...estado.futurosOrdens].reverse(); },
     async futurosAjustes() { await atraso(); return []; },
+    async marcarAvisoVisto(aviso) { estado.perfil.avisos_vistos = [...(estado.perfil.avisos_vistos ?? []), aviso]; },
     async executarFuturo(ativo, ladoOp, quantidade) {
       await atraso(400);
       if (!(await this.negociacaoLiberada())) throw new Error('Negociação fechada. Liberada em dias úteis das 19h às 9h.');
