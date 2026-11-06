@@ -38,8 +38,15 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
     const base = serie.map((p) => ({ data: p.data, valor: Number(p.patrimonio) }));
     const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
     const semHoje = base.filter((p) => p.data !== hoje);
-    return noPeriodo([...semHoje, { data: hoje, valor: resumo.patrimonio }], periodo);
-  }, [serie, periodo, resumo.patrimonio]);
+    // ponto de partida: o saldo inicial na véspera da criação da conta. Sem ele, o primeiro
+    // ponto já viria com as corretagens do primeiro dia e a variação começaria do lugar errado.
+    const criada = dados.perfil.criado_em
+      ? new Date(new Date(dados.perfil.criado_em).getTime() - 86400e3).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+      : null;
+    const inicio = criada && (!semHoje.length || semHoje[0].data > criada)
+      ? [{ data: criada, valor: Number(dados.config.saldo_inicial) }] : [];
+    return noPeriodo([...inicio, ...semHoje, { data: hoje, valor: resumo.patrimonio }], periodo);
+  }, [serie, periodo, resumo.patrimonio, dados.perfil.criado_em, dados.config.saldo_inicial]);
 
   const variacao = pontos ? variacaoSerie(pontos) : 0;
   const comparacao = useMemo(() => pontos && comparar(pontos, indices), [pontos, indices]);
@@ -65,6 +72,12 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
           <Icone nome={variacao >= 0 ? 'subida' : 'descida'} tamanho={18} />
           <strong className="num">{pct(variacao)}</strong> <span className="suave">no período</span>
         </p>
+        {periodo !== 'TUDO' && (
+          <p className="suave desde-inicio">
+            Desde o início ({reais(dados.config.saldo_inicial)}):{' '}
+            <strong className={`num ${tendencia(resumo.rentabilidade)}`}>{pct(resumo.rentabilidade)}</strong>
+          </p>
+        )}
         {pontos ? <Grafico pontos={pontos} altura={150} eixos={false} rotulo="Patrimônio" /> : <div className="grafico" style={{ height: 150 }} />}
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
         <div className="linha-saldo">

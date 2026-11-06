@@ -805,3 +805,5 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .selo-wdo { background: linear-gradient(135deg, #1D4ED8, #3B82F6); }
 .posicao-lado { font-size: 1.05rem; }
 .campo-quantidade:has(#qtd-futuro) label { grid-column: 1 / -1; }
+
+.desde-inicio { margin-top: -6px; font-size: 0.9rem; }
