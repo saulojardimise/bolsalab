@@ -40,8 +40,7 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
   }, [dados.futurosMercado]);
 
   const pontosGrafico = useMemo(() => indices && noPeriodo(serieFuturo(indices, ativo), periodo), [indices, ativo, periodo]);
-  // candles só no mini índice (a PTAX do dólar tem um só valor por dia)
-  const velas = useMemo(() => indices && ativo === 'WIN' && noPeriodo(velasFuturo(indices), periodo), [indices, ativo, periodo]);
+  const velas = useMemo(() => indices && noPeriodo(velasFuturo(indices, ativo), periodo), [indices, ativo, periodo]);
   const temVelas = velas && velas.some((v) => v.abertura != null && v.maxima != null);
 
   if (!contrato || contrato.preco == null) {
@@ -105,25 +104,25 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
             <strong className="num">{pct(contrato.variacao_pct)}</strong> <span className="suave">no último pregão</span>
           </p>
         )}
-        {ativo === 'WIN' && (
+        {(
           <div className="tipo-grafico" role="group" aria-label="Tipo de gráfico">
             <button aria-pressed={tipoGrafico !== 'candles'} onClick={() => trocarGrafico('linha')}>Linha</button>
             <button aria-pressed={tipoGrafico === 'candles'} onClick={() => trocarGrafico('candles')}>Candles</button>
             <Termo id="candlestick" />
           </div>
         )}
-        {ativo === 'WIN' && tipoGrafico === 'candles' && velas?.length > 1
+        {tipoGrafico === 'candles' && velas?.length > 1
           ? <Candles velas={velas} altura={200} rotulo={`Candles de ${contrato.contrato}`}
                      formatar={(v) => `${pontos(v, ativo)} pt`} />
           : pontosGrafico?.length > 1
           ? <Grafico pontos={pontosGrafico} altura={170} rotulo={contrato.contrato} formatar={(v) => `${pontos(v, ativo)} pt`} casasEixo={0} />
           : <div className="grafico" style={{ height: 170 }} />}
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
-        {ativo === 'WIN' && tipoGrafico === 'candles' && !temVelas && indices && (
-          <p className="nota">Os candles usam abertura, máxima e mínima do Ibovespa, que começam a ser gravadas agora: os dias antigos aparecem como um traço.</p>
+        {tipoGrafico === 'candles' && !temVelas && indices && (
+          <p className="nota">Os candles usam abertura, máxima e mínima {ativo === 'WIN' ? 'do Ibovespa' : 'dos boletins da PTAX'}, que começam a ser gravadas agora: os dias antigos aparecem como um traço.</p>
         )}
-        {ativo === 'WDO' && (
-          <p className="nota">O mini dólar só tem gráfico de linha: a PTAX, que dá o preço do simulador, é um único valor por dia.</p>
+        {ativo === 'WDO' && tipoGrafico === 'candles' && temVelas && (
+          <p className="nota">No mini dólar, cada vela vai do boletim de abertura da PTAX (10h) ao fechamento (13h), com a máxima e a mínima dos boletins do dia. Por isso as velas são curtas.</p>
         )}
         <p className="nota">
           Preço do simulador: {ativo === 'WIN'

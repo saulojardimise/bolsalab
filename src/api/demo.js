@@ -322,8 +322,11 @@ export function criarApiDemo() {
         const ab = r2(ibov * (1 + (rnd() - 0.5) * 0.008));
         const mx = r2(Math.max(ab, ibov) * (1 + rnd() * 0.006));
         const mn = r2(Math.min(ab, ibov) * (1 - rnd() * 0.006));
+        const dab = Math.round(dolar * (1 + (rnd() - 0.5) * 0.004) * 10000) / 10000;
         return [{ serie: 'IBOV', data, valor: ibov, abertura: ab, maxima: mx, minima: mn },
-                { serie: 'CDI', data, valor: 0.055131 }, { serie: 'PTAX', data, valor: dolar }];
+                { serie: 'CDI', data, valor: 0.055131 },
+                { serie: 'PTAX', data, valor: dolar, abertura: dab,
+                  maxima: Math.max(dab, dolar) + 0.004, minima: Math.min(dab, dolar) - 0.004 }];
       });
     },
     async futurosMercado() {

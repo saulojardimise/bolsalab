@@ -51,12 +51,14 @@ export function previaFuturo({ operacao, quantidade, contrato, posicao, saldo })
   };
 }
 
-/** Velas do mini índice a partir do Ibovespa (abertura, máxima e mínima arredondadas a 5 pontos) */
-export function velasFuturo(indices) {
-  const r5 = (v) => (v == null ? null : Math.round(Number(v) / 5) * 5);
+/** Velas do contrato: Ibovespa arredondado a 5 pontos (WIN) ou PTAX × 1.000 arredondada a 0,5 (WDO) */
+export function velasFuturo(indices, ativo = 'WIN') {
+  const conv = ativo === 'WIN'
+    ? (v) => (v == null ? null : Math.round(Number(v) / 5) * 5)
+    : (v) => (v == null ? null : Math.round(Number(v) * 2000) / 2);
   return indices
-    .filter((i) => i.serie === 'IBOV')
-    .map((i) => ({ data: i.data, preco: r5(i.valor), abertura: r5(i.abertura), maxima: r5(i.maxima), minima: r5(i.minima) }));
+    .filter((i) => i.serie === ATIVOS[ativo].serie)
+    .map((i) => ({ data: i.data, preco: conv(i.valor), abertura: conv(i.abertura), maxima: conv(i.maxima), minima: conv(i.minima) }));
 }
 
 /** Série de preços do contrato a partir do índice (Ibovespa ou PTAX) */
