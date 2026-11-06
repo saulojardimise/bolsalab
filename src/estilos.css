@@ -838,3 +838,5 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .candle-baixa .candle-corpo { fill: var(--vermelho); }
 .candle-pavio { stroke-width: 1.2; }
 .candle-foco { fill: var(--fundo); }
+
+#aviso-titulo:focus { outline: none; }

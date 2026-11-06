@@ -24,9 +24,15 @@ export function lembrarAvisoLocal(uid) {
 // com os preços de hoje. Aparece uma vez; fechado, não volta.
 export default function AvisoNovidade({ futuros, aoFechar, aoConhecer }) {
   const dialogo = useRef(null);
+  const titulo = useRef(null);
   useEffect(() => {
     const d = dialogo.current;
     d.showModal();
+    // o navegador põe o foco no primeiro botão (lá embaixo) e rola até ele:
+    // volta ao topo e põe o foco no título
+    titulo.current?.focus({ preventScroll: true });
+    d.scrollTop = 0;
+    d.querySelector('.aviso-conteudo')?.scrollTo?.(0, 0);
     return () => d.close();
   }, []);
 
@@ -47,7 +53,7 @@ export default function AvisoNovidade({ futuros, aoFechar, aoConhecer }) {
             onCancel={(e) => { e.preventDefault(); aoFechar(); }}>
       <div className="aviso-conteudo">
         <p className="aviso-chapeu"><span className="chip-novo">Novidade</span> no BolsaLab</p>
-        <h2 id="aviso-titulo">Agora você pode negociar minicontratos futuros</h2>
+        <h2 id="aviso-titulo" ref={titulo} tabIndex={-1}>Agora você pode negociar minicontratos futuros</h2>
         <p>
           Além das ações do Ibovespa, o simulador ganhou dois ativos do <strong>mercado futuro</strong> da B3, os mais
           negociados por pessoas físicas no Brasil:
