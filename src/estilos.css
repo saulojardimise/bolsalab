@@ -825,11 +825,11 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 
 /* candles */
 .tipo-grafico { display: flex; align-items: center; gap: 4px; justify-self: end; margin-bottom: -4px; }
-.tipo-grafico button {
+.tipo-grafico button:not(.botao-termo) {
   border: 1px solid var(--linha); background: none; color: var(--suave); font: inherit; font-size: 0.82rem; font-weight: 700;
   padding: 4px 12px; border-radius: 999px; cursor: pointer;
 }
-.tipo-grafico button[aria-pressed="true"] { background: var(--azul-fundo); color: var(--marinho); border-color: transparent; }
+.tipo-grafico button:not(.botao-termo)[aria-pressed="true"] { background: var(--azul-fundo); color: var(--marinho); border-color: transparent; }
 .candles-leitura { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.8rem; color: var(--suave); min-height: 1.2em; margin-bottom: 4px; }
 .candles-leitura strong { font-weight: 800; }
 .candle-alta .candle-pavio { stroke: var(--verde-forte); }
