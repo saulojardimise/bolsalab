@@ -21,7 +21,15 @@ import CompletarFoto, { fotoAdiada } from './CompletarFoto.jsx';
 // Abrir uma ação ou a área do professor empilha no histórico do navegador,
 // então o botão "voltar" do celular volta para a lista.
 export default function Painel({ uid }) {
-  const [aba, setAba] = useState('inicio');
+  // a aba fica guardada na sessão: se o app recarregar sozinho (versão nova
+  // publicada), o aluno continua onde estava em vez de voltar ao início
+  const [aba, setAbaEstado] = useState(() => {
+    try { return sessionStorage.getItem('bolsalab:aba') || 'inicio'; } catch { return 'inicio'; }
+  });
+  const setAba = (id) => {
+    setAbaEstado(id);
+    try { sessionStorage.setItem('bolsalab:aba', id); } catch { /* sem armazenamento */ }
+  };
   const [sobreposta, setSobreposta] = useState(null);   // { tipo: 'acao', ticker, operacao }
   const [perfilAberto, setPerfilAberto] = useState(false);
   const [dados, setDados] = useState(null);
