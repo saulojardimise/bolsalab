@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { diaMes, pct, tendencia } from '../lib/formato.js';
 import { lado, pontos } from '../lib/futuros.js';
+import { futuroAgora, horaBR, horarioDoDia, mercadoAgora } from '../lib/intradia.js';
 import Icone from '../componentes/Icone.jsx';
 import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
 import Termo from '../componentes/Termo.jsx';
@@ -15,7 +16,9 @@ export default function Mercado({ dados, linhas, aoEscolher, aoAbrirFuturo }) {
   const tenho = Object.fromEntries(carteira.map((p) => [p.ticker, p.quantidade]));
 
   const termo = busca.trim().toLowerCase();
-  const lista = mercado
+  const comHoje = mercadoAgora(mercado, dados.intradia);
+  const horaHoje = horarioDoDia(mercado, dados.intradia);
+  const lista = comHoje
     .filter((e) => (!setor || e.setor === setor) &&
       (!termo || e.ticker.toLowerCase().includes(termo) || e.nome.toLowerCase().includes(termo)))
     .map((e) => ({ ...e, detalhe: tenho[e.ticker] ? `${e.nome}, você tem ${detalheQuantidade(tenho[e.ticker])}` : e.nome }));
@@ -26,14 +29,21 @@ export default function Mercado({ dados, linhas, aoEscolher, aoAbrirFuturo }) {
     <div className="pilha">
       <div className="secao-topo">
         <h1>Mercado</h1>
-        {dataRef && <p className="suave"><Termo id="fechamento">Fechamento</Termo> de {diaMes(dataRef)}</p>}
+        {horaHoje
+          ? <p className="suave"><span className="ponto-vivo" aria-hidden="true" /> Cotação das {horaBR(horaHoje)} <Termo id="cotacao_do_dia" /></p>
+          : dataRef && <p className="suave"><Termo id="fechamento">Fechamento</Termo> de {diaMes(dataRef)}</p>}
       </div>
+      {horaHoje && (
+        <p className="nota nota-hoje">Preços do pregão de hoje, com cerca de 30 min de atraso, só para acompanhar. As ordens usam o fechamento de {diaMes(dataRef)}.</p>
+      )}
 
       {dados.futurosMercado?.some((f) => f.preco != null) && (
         <section aria-labelledby="titulo-mini">
           <h2 id="titulo-mini" className="secao-titulo"><Termo id="minicontrato">Minicontratos</Termo></h2>
           <div className="cartao cartao-lista"><ul className="ativos">
-            {dados.futurosMercado.filter((f) => f.preco != null).map((f) => {
+            {dados.futurosMercado.filter((f) => f.preco != null).map((f0) => {
+              const ag = futuroAgora(dados.intradia, f0);
+              const f = ag ? { ...f0, preco: ag.preco, variacao_pct: ag.variacao_pct } : f0;
               const pos = dados.futuros?.find((x) => x.ativo === f.ativo);
               return (
                 <li key={f.ativo}>

@@ -11,6 +11,8 @@ import ListaAtivos, { detalheQuantidade } from '../componentes/ListaAtivos.jsx';
 import Termo from '../componentes/Termo.jsx';
 import { montarCapa, quando } from '../lib/noticias.js';
 import { comparar } from '../lib/comparacao.js';
+import { mercadoAgora, oscilacaoHoje } from '../lib/intradia.js';
+import { LinhaHoje } from '../componentes/Hoje.jsx';
 import Comparativo from '../componentes/Comparativo.jsx';
 
 // Tela inicial: patrimônio com gráfico, saldo, dica do dia e os ativos do aluno
@@ -52,8 +54,10 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
   const comparacao = useMemo(() => pontos && comparar(pontos, indices), [pontos, indices]);
   const temIndices = comparacao && (comparacao.final.ibov != null || comparacao.final.cdi != null);
   const nome = dados.perfil.nome.split(' ')[0] || 'aluno';
+  const mercadoHoje = mercadoAgora(dados.mercado, dados.intradia);
+  const hoje = oscilacaoHoje({ ...dados });
   const meus = dados.carteira.map((p) => {
-    const m = dados.mercado.find((e) => e.ticker === p.ticker);
+    const m = mercadoHoje.find((e) => e.ticker === p.ticker);
     return { ...m, detalhe: detalheQuantidade(p.quantidade) };
   });
   const d = DICAS[dica];
@@ -72,6 +76,7 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
           <Icone nome={variacao >= 0 ? 'subida' : 'descida'} tamanho={18} />
           <strong className="num">{pct(variacao)}</strong> <span className="suave">no período</span>
         </p>
+        <LinhaHoje oscilacao={hoje} patrimonio={resumo.patrimonio} />
         {periodo !== 'TUDO' && (
           <p className="suave desde-inicio">
             Desde o início ({reais(dados.config.saldo_inicial)}):{' '}

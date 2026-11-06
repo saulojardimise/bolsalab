@@ -225,6 +225,9 @@ export function criarApi(supabase, { urlRetorno } = {}) {
       return checar(await supabase.from('futuros_ajustes').select('*').eq('user_id', uid)
         .order('criado_em', { ascending: false }).limit(limite));
     },
+    async intradia() {
+      return checar(await supabase.from('intradia').select('*'));
+    },
     async marcarAvisoVisto(aviso) {
       return checar(await supabase.rpc('marcar_aviso_visto', { p_aviso: aviso }));
     },

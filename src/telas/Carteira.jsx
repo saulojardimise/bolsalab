@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/index.js';
 import { usoDoStop } from '../lib/regras.js';
 import { lado, pontos } from '../lib/futuros.js';
+import { oscilacaoHoje } from '../lib/intradia.js';
+import { LinhaHoje } from '../componentes/Hoje.jsx';
 import { numero, pct, reais, reaisComSinal, tendencia } from '../lib/formato.js';
 import Logo from '../componentes/Logo.jsx';
 import Icone from '../componentes/Icone.jsx';
@@ -42,6 +44,7 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
           <span className="suave">desde o início ({reais(config.saldo_inicial)})</span>
           <Termo id="rentabilidade" />
         </p>
+        <LinhaHoje oscilacao={oscilacaoHoje({ ...dados })} patrimonio={resumo.patrimonio} />
         <dl className="resumo-linhas">
           <div><dt><Termo id="saldo">Saldo disponível</Termo></dt><dd className="num">{reais(resumo.saldo)}</dd></div>
           <div><dt>Ações compradas</dt><dd className="num">{reais(resumo.acoes)}</dd></div>

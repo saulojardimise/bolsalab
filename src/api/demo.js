@@ -346,6 +346,20 @@ export function criarApiDemo() {
     async futurosPosicoes() { await atraso(); return estado.futuros.map((f) => ({ ...f })); },
     async futurosOrdens() { await atraso(); return [...estado.futurosOrdens].reverse(); },
     async futurosAjustes() { await atraso(); return []; },
+    async intradia() {
+      const m = await this.mercado();
+      const ind = await this.indices();
+      // na demonstração, a "cotação do dia" é sempre do pregão seguinte ao último fechamento, às 13h30
+      const d = new Date(); d.setDate(d.getDate() + 1);
+      const horario = new Date(`${d.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })}T13:30:00-03:00`).toISOString();
+      const rnd = semente('intradia');
+      const ult = (serie) => ind.filter((i) => i.serie === serie).at(-1).valor;
+      return [
+        ...m.filter((e) => e.preco).map((e) => ({ codigo: e.ticker, preco: r2(e.preco * (1 + (rnd() - 0.48) * 0.03)), horario })),
+        { codigo: 'IBOV', preco: r2(ult('IBOV') * 1.004), horario },
+        { codigo: 'USD', preco: Math.round(ult('PTAX') * 0.997 * 10000) / 10000, horario },
+      ];
+    },
     async marcarAvisoVisto(aviso) { estado.perfil.avisos_vistos = [...(estado.perfil.avisos_vistos ?? []), aviso]; },
     async executarFuturo(ativo, ladoOp, quantidade) {
       await atraso(400);

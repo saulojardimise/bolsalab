@@ -842,3 +842,11 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 #aviso-titulo:focus { outline: none; }
 
 .ativo-id-futuro span { white-space: normal; }
+
+/* cotação do dia */
+.linha-hoje { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 0.9rem; }
+.ponto-vivo { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--verde-forte); flex: none;
+  box-shadow: 0 0 0 0 var(--verde-forte); animation: pulso 2s infinite; vertical-align: middle; }
+@keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(0, 149, 111, 0.5); } 70% { box-shadow: 0 0 0 6px rgba(0, 149, 111, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 149, 111, 0); } }
+@media (prefers-reduced-motion: reduce) { .ponto-vivo { animation: none; } }
+.nota-hoje { margin-top: -6px; }

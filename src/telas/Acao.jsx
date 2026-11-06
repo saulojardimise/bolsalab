@@ -4,6 +4,8 @@ import { noPeriodo } from '../lib/periodos.js';
 import { diaMes, diaSemanaMes, numero, pct, reais, reaisComSinal, tendencia, volume } from '../lib/formato.js';
 import Grafico from '../componentes/Grafico.jsx';
 import Candles from '../componentes/Candles.jsx';
+import { PrecoAgora } from '../componentes/Hoje.jsx';
+import { acaoAgora } from '../lib/intradia.js';
 import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
 import Logo from '../componentes/Logo.jsx';
@@ -81,6 +83,7 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
             <span className="suave">no último pregão</span>
           </p>
         )}
+        <PrecoAgora agora={acaoAgora(dados.intradia, empresa)} />
 
         {erro && <p className="aviso aviso-erro" role="alert">{erro}</p>}
         <div className="tipo-grafico" role="group" aria-label="Tipo de gráfico">

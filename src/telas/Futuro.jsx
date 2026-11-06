@@ -5,6 +5,8 @@ import { diaMes, diasAtras, pct, reais, reaisComSinal, tendencia } from '../lib/
 import { ATIVOS, lado, pontos, previaFuturo, serieFuturo, velasFuturo } from '../lib/futuros.js';
 import Grafico from '../componentes/Grafico.jsx';
 import Candles from '../componentes/Candles.jsx';
+import { PrecoAgora } from '../componentes/Hoje.jsx';
+import { futuroAgora } from '../lib/intradia.js';
 import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
 import Termo from '../componentes/Termo.jsx';
@@ -98,6 +100,7 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
           <span className="etiqueta-info">Ajuste de {diaMes(contrato.data)}</span>
         </div>
         <p className="valor-grande num">{pontos(contrato.preco, ativo)} <small className="suave">pontos</small></p>
+        <PrecoAgora agora={futuroAgora(dados.intradia, contrato)} formatar={(v) => `${pontos(v, ativo)} pt`} />
         {contrato.variacao_pct != null && (
           <p className={`variacao-periodo ${tendencia(contrato.variacao_pct)}`}>
             <strong className="num">{pct(contrato.variacao_pct)}</strong> <span className="suave">no último pregão</span>

@@ -75,6 +75,12 @@ export const GLOSSARIO = {
       + 'Num olhar, dá para ver se o dia foi de alta ou de queda e o quanto o preço oscilou.',
     exemplo: 'Abriu a R$ 30, foi até R$ 31,50, caiu até R$ 29,80 e fechou a R$ 31: vela verde de 30 a 31, pavio de 29,80 a 31,50.',
   },
+  cotacao_do_dia: {
+    titulo: 'Cotação do dia',
+    texto: 'Durante o pregão, o simulador atualiza os preços a cada 1h30 (11h, 12h30, 14h, 15h30 e 17h), com cerca de '
+      + '30 minutos de atraso. Serve para você acompanhar como a sua carteira está oscilando. As ordens continuam '
+      + 'sendo feitas à noite e no fim de semana, pelo preço de fechamento, e o patrimônio e o ranking só mudam com o fechamento.',
+  },
   fechamento: {
     titulo: 'Preço de fechamento',
     texto: 'O preço do último negócio do dia na bolsa. O simulador usa o fechamento de cada pregão: '

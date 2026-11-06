@@ -42,13 +42,14 @@ export default function Painel({ uid }) {
 
   const carregar = useCallback(async () => {
     try {
-      const [perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros] = await Promise.all([
+      const [perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros, intradia] = await Promise.all([
         api.perfil(uid), api.config(), api.mercado(), api.carteira(uid), api.vendidas(uid),
         api.negociacaoLiberada(),
         // minicontratos: se o banco ainda não tiver o SQL 014, o app segue sem eles
         api.futurosMercado().catch(() => []), api.futurosPosicoes(uid).catch(() => []),
+        api.intradia().catch(() => []),
       ]);
-      setDados({ perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros });
+      setDados({ perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros, intradia });
       setErro('');
       return mercado;
     } catch (e) {
