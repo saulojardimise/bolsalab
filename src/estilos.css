@@ -840,3 +840,5 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .candle-foco { fill: var(--fundo); }
 
 #aviso-titulo:focus { outline: none; }
+
+.ativo-id-futuro span { white-space: normal; }

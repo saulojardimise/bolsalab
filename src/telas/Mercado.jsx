@@ -32,18 +32,18 @@ export default function Mercado({ dados, linhas, aoEscolher, aoAbrirFuturo }) {
       {dados.futurosMercado?.some((f) => f.preco != null) && (
         <section aria-labelledby="titulo-mini">
           <h2 id="titulo-mini" className="secao-titulo"><Termo id="minicontrato">Minicontratos</Termo></h2>
-          <ul className="cartao cartao-lista ativos">
+          <div className="cartao cartao-lista"><ul className="ativos">
             {dados.futurosMercado.filter((f) => f.preco != null).map((f) => {
               const pos = dados.futuros?.find((x) => x.ativo === f.ativo);
               return (
                 <li key={f.ativo}>
                   <button className="ativo" onClick={() => aoAbrirFuturo(f.ativo)}>
                     <span className={`selo-futuro selo-${f.ativo.toLowerCase()}`} aria-hidden="true">{f.ativo}</span>
-                    <span className="ativo-id">
+                    <span className="ativo-id ativo-id-futuro">
                       <strong>{f.contrato}</strong>
-                      <span>{pos ? `${f.nome}, ${lado(pos.quantidade).texto.toLowerCase()}` : `${f.nome} · vence ${diaMes(f.vencimento)}`}</span>
+                      <span>{f.nome}</span>
+                      <span>{pos ? lado(pos.quantidade).texto : `vence ${diaMes(f.vencimento)}`}</span>
                     </span>
-                    <span />
                     <span className="ativo-preco">
                       <strong className="num">{pontos(f.preco, f.ativo)} pt</strong>
                       {f.variacao_pct != null && <span className={`num ${tendencia(f.variacao_pct)}`}>{pct(f.variacao_pct)}</span>}
@@ -52,7 +52,7 @@ export default function Mercado({ dados, linhas, aoEscolher, aoAbrirFuturo }) {
                 </li>
               );
             })}
-          </ul>
+          </ul></div>
         </section>
       )}
 
