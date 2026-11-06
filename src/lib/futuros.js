@@ -51,6 +51,14 @@ export function previaFuturo({ operacao, quantidade, contrato, posicao, saldo })
   };
 }
 
+/** Velas do mini índice a partir do Ibovespa (abertura, máxima e mínima arredondadas a 5 pontos) */
+export function velasFuturo(indices) {
+  const r5 = (v) => (v == null ? null : Math.round(Number(v) / 5) * 5);
+  return indices
+    .filter((i) => i.serie === 'IBOV')
+    .map((i) => ({ data: i.data, preco: r5(i.valor), abertura: r5(i.abertura), maxima: r5(i.maxima), minima: r5(i.minima) }));
+}
+
 /** Série de preços do contrato a partir do índice (Ibovespa ou PTAX) */
 export function serieFuturo(indices, ativo) {
   const a = ATIVOS[ativo];

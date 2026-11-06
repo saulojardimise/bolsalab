@@ -319,7 +319,11 @@ export function criarApiDemo() {
       return diasUteis(60).flatMap((data) => {
         ibov = r2(ibov * (1 + (rnd() - 0.47) * 0.018));
         dolar = Math.round(dolar * (1 + (rnd() - 0.5) * 0.012) * 10000) / 10000;
-        return [{ serie: 'IBOV', data, valor: ibov }, { serie: 'CDI', data, valor: 0.055131 }, { serie: 'PTAX', data, valor: dolar }];
+        const ab = r2(ibov * (1 + (rnd() - 0.5) * 0.008));
+        const mx = r2(Math.max(ab, ibov) * (1 + rnd() * 0.006));
+        const mn = r2(Math.min(ab, ibov) * (1 - rnd() * 0.006));
+        return [{ serie: 'IBOV', data, valor: ibov, abertura: ab, maxima: mx, minima: mn },
+                { serie: 'CDI', data, valor: 0.055131 }, { serie: 'PTAX', data, valor: dolar }];
       });
     },
     async futurosMercado() {

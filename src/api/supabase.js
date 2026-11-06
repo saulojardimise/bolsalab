@@ -158,7 +158,7 @@ export function criarApi(supabase, { urlRetorno } = {}) {
 
     // Ibovespa e CDI para comparar com o patrimônio
     async indices(desde) {
-      return checar(await supabase.from('indices').select('serie, data, valor').gte('data', desde)
+      return checar(await supabase.from('indices').select('*').gte('data', desde)
         .order('data').limit(1000));
     },
 
