@@ -15,8 +15,10 @@ export default function Extrato({ uid, dados, resumo, versao, aoVoltar }) {
 
   useEffect(() => {
     let vivo = true;
-    Promise.all([api.ordens(uid, 5000), api.cobrancas(uid, 5000), api.ajustes(uid, 5000)])
-      .then(([ordens, cobrancas, ajustes]) => vivo && setMov({ ordens, cobrancas, ajustes }))
+    Promise.all([api.ordens(uid, 5000), api.cobrancas(uid, 5000), api.ajustes(uid, 5000),
+                 api.futurosOrdens(uid, 5000).catch(() => []), api.futurosAjustes(uid, 5000).catch(() => [])])
+      .then(([ordens, cobrancas, ajustes, futurosOrdens, futurosAjustes]) =>
+        vivo && setMov({ ordens, cobrancas, ajustes, futurosOrdens, futurosAjustes }))
       .catch((e) => vivo && setErro(e.message));
     return () => { vivo = false; };
   }, [uid, versao]);
@@ -52,6 +54,8 @@ export default function Extrato({ uid, dados, resumo, versao, aoVoltar }) {
             <Linha rotulo={`Corretagens (${numero(t.ordens)} ${t.ordens === 1 ? 'ordem' : 'ordens'})`} valor={t.corretagens} termo="corretagem" />
             {t.aluguel !== 0 && <Linha rotulo="Aluguel de ações" valor={t.aluguel} termo="aluguel" />}
             {t.ajustes !== 0 && <Linha rotulo="Ajustes de eventos das ações" valor={t.ajustes} />}
+            {t.futuros !== 0 && <Linha rotulo="Ajustes diários de minicontratos" valor={t.futuros} termo="ajuste_diario" />}
+            {t.margem !== 0 && <Linha rotulo="Margem de minicontratos (depositada)" valor={t.margem} termo="margem_garantia" />}
             <div className="fluxo-total">
               <dt><Termo id="saldo">Saldo disponível</Termo></dt>
               <dd className="num">{reais(confere ? t.final : resumo.saldo)}</dd>
@@ -112,7 +116,8 @@ function Lancamento({ l }) {
         </span>
       </div>
 
-      {l.quantidade > 0 && (
+      {l.detalhe && <p className="extrato-detalhe"><span>{l.detalhe}</span></p>}
+      {!l.detalhe && l.quantidade > 0 && (
         <p className="extrato-detalhe"><span>{numero(l.quantidade)} ações × {reais(l.preco)}</span></p>
       )}
       {l.partes.length > 1 && (

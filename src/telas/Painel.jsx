@@ -13,6 +13,7 @@ import Turma from './Turma.jsx';
 import Extrato from './Extrato.jsx';
 import Questionario from './Questionario.jsx';
 import Noticias from './Noticias.jsx';
+import Futuro from './Futuro.jsx';
 import CompletarFoto, { fotoAdiada } from './CompletarFoto.jsx';
 
 // Área logada: carrega os dados da conta e controla a navegação.
@@ -31,11 +32,13 @@ export default function Painel({ uid }) {
 
   const carregar = useCallback(async () => {
     try {
-      const [perfil, config, mercado, carteira, vendidas, liberada] = await Promise.all([
+      const [perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros] = await Promise.all([
         api.perfil(uid), api.config(), api.mercado(), api.carteira(uid), api.vendidas(uid),
         api.negociacaoLiberada(),
+        // minicontratos: se o banco ainda não tiver o SQL 014, o app segue sem eles
+        api.futurosMercado().catch(() => []), api.futurosPosicoes(uid).catch(() => []),
       ]);
-      setDados({ perfil, config, mercado, carteira, vendidas, liberada });
+      setDados({ perfil, config, mercado, carteira, vendidas, liberada, futurosMercado, futuros });
       setErro('');
       return mercado;
     } catch (e) {
@@ -73,7 +76,7 @@ export default function Painel({ uid }) {
   }, [recado]);
 
   const resumo = useMemo(() => dados && resumoCarteira({
-    saldo: dados.perfil.saldo, carteira: dados.carteira, vendidas: dados.vendidas,
+    saldo: dados.perfil.saldo, carteira: dados.carteira, vendidas: dados.vendidas, futuros: dados.futuros,
     saldoInicial: Number(dados.config.saldo_inicial),
   }), [dados]);
 
@@ -121,6 +124,7 @@ export default function Painel({ uid }) {
   const fechar = () => window.history.back();
   const abrirAcao = (ticker, operacao) => abrir({ tipo: 'acao', ticker, operacao });
   const abrirExtrato = () => abrir({ tipo: 'extrato' });
+  const abrirFuturo = (ativo) => abrir({ tipo: 'futuro', ativo });
   const trocarAba = (id) => {
     if (sobreposta) window.history.back();
     setAba(id);
@@ -139,6 +143,8 @@ export default function Painel({ uid }) {
       <Acao key={sobreposta.ticker} ticker={sobreposta.ticker} operacaoInicial={sobreposta.operacao}
             dados={dados} aoVoltar={fechar} aoExecutar={aoExecutar} />
     );
+  } else if (sobreposta?.tipo === 'futuro') {
+    conteudo = <Futuro key={sobreposta.ativo} ativo={sobreposta.ativo} dados={dados} aoVoltar={fechar} aoExecutar={aoExecutar} />;
   } else if (sobreposta?.tipo === 'questionario') {
     conteudo = <Questionario perfilAtual={dados.perfil.perfil_investidor} aoVoltar={fechar}
                              aoConcluir={async () => { await carregar(); fechar(); setRecado('Perfil de investidor atualizado.'); }} />;
@@ -148,12 +154,12 @@ export default function Painel({ uid }) {
     conteudo = <Inicio uid={uid} dados={dados} resumo={resumo} linhas={linhas} versao={versao}
                        aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;
   } else if (aba === 'mercado') {
-    conteudo = <Mercado dados={dados} linhas={linhas} aoEscolher={abrirAcao} />;
+    conteudo = <Mercado dados={dados} linhas={linhas} aoEscolher={abrirAcao} aoAbrirFuturo={abrirFuturo} />;
   } else if (aba === 'noticias') {
     conteudo = <Noticias dados={dados} aoEscolher={abrirAcao} />;
   } else if (aba === 'carteira') {
     conteudo = <Carteira uid={uid} dados={dados} resumo={resumo} versao={versao}
-                         aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} />;
+                         aoEscolher={abrirAcao} irPara={trocarAba} aoAbrirExtrato={abrirExtrato} aoAbrirFuturo={abrirFuturo} />;
   } else {
     conteudo = <Turma turmaId={dados.perfil.turma_id} turmaNome={dados.perfil.turma} versao={versao} />;
   }
@@ -164,7 +170,7 @@ export default function Painel({ uid }) {
       {api.modoDemo && <p className="faixa-demo">Demonstração com preços fictícios</p>}
       {erro && <p className="aviso aviso-erro conteudo" role="alert">{erro}</p>}
       <main className="conteudo">{conteudo}</main>
-      <Navegacao aba={sobreposta?.tipo === 'acao' ? 'mercado' : aba} aoTrocar={trocarAba} />
+      <Navegacao aba={sobreposta?.tipo === 'acao' || sobreposta?.tipo === 'futuro' ? 'mercado' : aba} aoTrocar={trocarAba} />
 
       {perfilAberto && (
         <MenuPerfil

@@ -23,7 +23,7 @@ test('fluxo de caixa separa ações, corretagem, garantia e aluguel, e fecha com
 
   assert.deepEqual(totais, {
     inicial: 10000, compras: -4000, vendas: 2100, descoberto: 100, corretagens: -60,
-    aluguel: -2.5, ajustes: 7.3, ordens: 4, final: 10000 - 4015 + 2085 - 15 - 2.5 + 85 + 7.3,
+    aluguel: -2.5, ajustes: 7.3, futuros: 0, margem: 0, ordens: 4, final: 10000 - 4015 + 2085 - 15 - 2.5 + 85 + 7.3,
   });
   // os totais somam o saldo final
   const soma = totais.inicial + totais.compras + totais.vendas + totais.descoberto + totais.corretagens + totais.aluguel + totais.ajustes;
@@ -46,4 +46,21 @@ test('conta nova: só o saldo inicial', () => {
   assert.equal(lancamentos.length, 1);
   assert.equal(totais.final, 10000);
   assert.equal(totais.corretagens, 0);
+});
+
+test('minicontratos: margem depositada e devolvida, corretagem e ajustes diários fecham com o saldo', () => {
+  const futurosOrdens = [
+    { id: 1, contrato: 'WINZ26', lado: 'compra', quantidade: 2, preco: 131000, corretagem: 10, margem: 7860, criado_em: t(1) },
+    { id: 2, contrato: 'WINZ26', lado: 'venda', quantidade: 2, preco: 132005, corretagem: 10, margem: -7860, criado_em: t(3) },
+  ];
+  const futurosAjustes = [
+    { id: 1, contrato: 'WINZ26', tipo: 'ajuste', quantidade: 2, preco_anterior: 131000, preco: 132005, valor: 402, criado_em: t(2) },
+    { id: 2, contrato: 'WINZ26', tipo: 'ajuste', quantidade: 2, preco_anterior: 132005, preco: 132005, valor: 0, criado_em: t(3) },
+  ];
+  const { lancamentos, totais } = fluxoDeCaixa({ futurosOrdens, futurosAjustes, saldoInicial: 10000 });
+  assert.deepEqual([totais.margem, totais.futuros, totais.corretagens, totais.final], [0, 402, -20, 10382]);
+  assert.deepEqual(lancamentos.map((l) => [l.titulo, l.saldo]), [
+    ['Venda de minicontrato', 10382], ['Ajuste diário', 2532], ['Compra de minicontrato', 2130], ['Saldo inicial', 10000],
+  ]);
+  assert.equal(lancamentos[1].detalhe, 'Comprado em 2: 131.000 → 132.005 pontos');
 });

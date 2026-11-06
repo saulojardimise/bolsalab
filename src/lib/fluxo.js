@@ -8,6 +8,7 @@ export const GRUPOS = [
   { id: 'compra', rotulo: 'Compras' },
   { id: 'venda', rotulo: 'Vendas' },
   { id: 'descoberto', rotulo: 'A descoberto' },
+  { id: 'futuros', rotulo: 'Minicontratos' },
   { id: 'custos', rotulo: 'Taxas e aluguel' },
 ];
 
@@ -60,6 +61,36 @@ function deOrdem(o) {
   }
 }
 
+const pts = (v, contrato) => Number(v).toLocaleString('pt-BR', {
+  minimumFractionDigits: contrato.startsWith('WDO') ? 1 : 0, maximumFractionDigits: contrato.startsWith('WDO') ? 1 : 0,
+});
+
+function deOrdemFuturo(o) {
+  const c = Number(o.corretagem);
+  const m = Number(o.margem);     // + depositada, − devolvida
+  const partes = [];
+  if (m > 0) partes.push({ rotulo: 'Margem depositada', valor: -m });
+  if (m < 0) partes.push({ rotulo: 'Margem devolvida', valor: -m });
+  partes.push({ rotulo: 'Corretagem', valor: -c });
+  return {
+    id: 'f' + o.id, origem: 'ordem', tipo: 'ordem_futuro', grupo: 'futuros', ticker: o.contrato, quando: o.criado_em,
+    titulo: o.lado === 'compra' ? 'Compra de minicontrato' : 'Venda de minicontrato',
+    detalhe: `${o.quantidade} ${o.quantidade === 1 ? 'contrato' : 'contratos'} a ${pts(o.preco, o.contrato)} pontos`,
+    corretagem: c, efeito: -m - c, partes, totais: { margem: -m, corretagens: -c },
+  };
+}
+
+const TITULO_FUTURO = { ajuste: 'Ajuste diário', vencimento: 'Vencimento', zeragem: 'Zeragem (chamada de margem)' };
+function deAjusteFuturo(a) {
+  const q = Number(a.quantidade);
+  return {
+    id: 'g' + a.id, origem: 'ajuste', tipo: 'ajuste_futuro', grupo: 'futuros', ticker: a.contrato, quando: a.criado_em,
+    titulo: TITULO_FUTURO[a.tipo] ?? 'Ajuste',
+    detalhe: `${q > 0 ? 'Comprado' : 'Vendido'} em ${Math.abs(q)}: ${pts(a.preco_anterior, a.contrato)} → ${pts(a.preco, a.contrato)} pontos`,
+    efeito: Number(a.valor), partes: [], totais: { futuros: Number(a.valor) },
+  };
+}
+
 /**
  * @param {object} p
  * @param {object[]} p.ordens     tabela ordens
@@ -69,9 +100,12 @@ function deOrdem(o) {
  * @param {string}   [p.inicio]   quando a conta foi criada
  * @returns {{ lancamentos: object[], totais: object }} lançamentos do mais recente para o mais antigo
  */
-export function fluxoDeCaixa({ ordens = [], cobrancas = [], ajustes = [], saldoInicial, inicio = null }) {
+export function fluxoDeCaixa({ ordens = [], cobrancas = [], ajustes = [], futurosOrdens = [], futurosAjustes = [],
+                              saldoInicial, inicio = null }) {
   const lista = [
     ...ordens.map(deOrdem),
+    ...futurosOrdens.map(deOrdemFuturo),
+    ...futurosAjustes.filter((a) => Number(a.valor) !== 0 || a.tipo !== 'ajuste').map(deAjusteFuturo),
     ...cobrancas.map((c) => ({
       id: 'a' + c.id, origem: 'aluguel', tipo: 'aluguel', grupo: 'custos', titulo: 'Aluguel', ticker: c.ticker,
       quando: c.criado_em, efeito: -Number(c.valor), dias: c.dias, base: Number(c.base), ate: c.data,
@@ -85,7 +119,7 @@ export function fluxoDeCaixa({ ordens = [], cobrancas = [], ajustes = [], saldoI
   ].sort((a, b) => (new Date(a.quando) - new Date(b.quando)) || (PESO[a.origem] - PESO[b.origem]));
 
   const totais = { inicial: Number(saldoInicial), compras: 0, vendas: 0, descoberto: 0, corretagens: 0,
-                   aluguel: 0, ajustes: 0, ordens: ordens.length };
+                   aluguel: 0, ajustes: 0, futuros: 0, margem: 0, ordens: ordens.length + futurosOrdens.length };
   let saldo = Number(saldoInicial);
   for (const l of lista) {
     saldo = r2(saldo + l.efeito);

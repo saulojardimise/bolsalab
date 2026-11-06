@@ -88,15 +88,18 @@ export function previa({ tipo, quantidade, preco, saldo, config, qtdComprada = 0
 }
 
 /** Totais da carteira (mesma conta do ranking no banco). */
-export function resumoCarteira({ saldo, carteira, vendidas, saldoInicial = 10000 }) {
+export function resumoCarteira({ saldo, carteira, vendidas, futuros = [], saldoInicial = 10000 }) {
   const acoes = carteira.reduce((s, p) => s + Number(p.valor_atual || 0), 0);
+  // margem dos minicontratos: saiu do saldo, mas continua sendo do aluno
+  const margemFuturos = futuros.reduce((s, f) => s + Number(f.garantia || 0), 0);
   const garantias = vendidas.reduce((s, v) => s + Number(v.garantia || 0), 0);
   const custoRecompra = vendidas.reduce((s, v) => s + Number(v.custo_recompra || 0), 0);
   const vendido = garantias - custoRecompra;     // quanto as vendas a descoberto valem hoje
-  const patrimonio = Number(saldo) + acoes + vendido;
+  const patrimonio = Number(saldo) + acoes + vendido + margemFuturos;
   return {
     saldo: Number(saldo),
     acoes,
+    margemFuturos,
     garantias,
     vendido,
     patrimonio,

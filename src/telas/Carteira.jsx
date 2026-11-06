@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/index.js';
 import { usoDoStop } from '../lib/regras.js';
+import { lado, pontos } from '../lib/futuros.js';
 import { numero, pct, reais, reaisComSinal, tendencia } from '../lib/formato.js';
 import Logo from '../componentes/Logo.jsx';
 import Icone from '../componentes/Icone.jsx';
@@ -10,7 +11,7 @@ import Termo from '../componentes/Termo.jsx';
 const CORES_SETOR = ['var(--verde)', 'var(--azul)', 'var(--ambar)', 'var(--verde-claro-forte)', 'var(--azul-claro)', 'var(--suave)'];
 
 // Patrimônio, distribuição por setor, posições e atalho para o extrato
-export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPara, aoAbrirExtrato }) {
+export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPara, aoAbrirExtrato, aoAbrirFuturo }) {
   const { carteira, vendidas, config } = dados;
   const [corretagens, setCorretagens] = useState(null);
 
@@ -46,6 +47,9 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
           <div><dt>Ações compradas</dt><dd className="num">{reais(resumo.acoes)}</dd></div>
           {vendidas.length > 0 && (
             <div><dt><Termo id="venda_descoberto">Vendas a descoberto</Termo></dt><dd className={`num ${tendencia(resumo.vendido)}`}>{reaisComSinal(resumo.vendido)}</dd></div>
+          )}
+          {resumo.margemFuturos > 0 && (
+            <div><dt><Termo id="margem_garantia">Margem em minicontratos</Termo></dt><dd className="num">{reais(resumo.margemFuturos)}</dd></div>
           )}
           {corretagens > 0 && (
             <div><dt><Termo id="corretagem">Corretagens pagas</Termo></dt><dd className="num">{reais(corretagens)}</dd></div>
@@ -161,6 +165,35 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
         </section>
       )}
 
+      {dados.futuros?.length > 0 && (
+        <section aria-labelledby="titulo-futuros">
+          <h2 id="titulo-futuros" className="secao-titulo"><Termo id="minicontrato">Minicontratos</Termo></h2>
+          <ul className="cartao cartao-lista posicoes">
+            {dados.futuros.map((f) => {
+              const m = dados.futurosMercado?.find((x) => x.ativo === f.ativo);
+              return (
+                <li key={f.contrato}>
+                  <button className="posicao" onClick={() => aoAbrirFuturo(f.ativo)}>
+                    <span className={`selo-futuro selo-${f.ativo.toLowerCase()}`} aria-hidden="true">{f.ativo}</span>
+                    <span className="posicao-id">
+                      <strong>{f.contrato}</strong>
+                      <span>{lado(f.quantidade).texto}, aberto a {pontos(f.preco_medio, f.ativo)} pt{m ? `, hoje ${pontos(m.preco, f.ativo)} pt` : ''}</span>
+                    </span>
+                    <span className="posicao-valor">
+                      <strong className={`num ${tendencia(f.resultado)}`}>{reaisComSinal(f.resultado)}</strong>
+                      <span className="suave">margem {reais(f.garantia)}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="nota">
+            O valor em destaque é a soma dos <Termo id="ajuste_diario">ajustes diários</Termo> desde a abertura: já entrou (ou saiu) do seu saldo.
+            A <Termo id="margem_garantia">margem</Termo> volta ao saldo quando você zera a posição ou no vencimento.
+          </p>
+        </section>
+      )}
     </div>
   );
 }

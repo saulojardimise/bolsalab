@@ -115,6 +115,66 @@ export const GLOSSARIO = {
       + 'rende "100% do CDI" acompanha essa taxa sem o sobe e desce das ações. Render menos que o CDI significa que '
       + 'o risco da bolsa não compensou no período.',
   },
+  minicontrato: {
+    titulo: 'Minicontrato futuro',
+    texto: 'Um acordo de comprar ou vender um ativo numa data futura, por um preço combinado hoje. Você não paga o valor '
+      + 'inteiro: deposita só uma margem de garantia, e o ganho ou a perda entra no saldo todo dia (ajuste diário). '
+      + 'Por isso o minicontrato é alavancado: com pouco dinheiro, você fica exposto a um valor bem maior.',
+    exemplo: 'Um mini índice com o Ibovespa em 130.000 pontos vale R$ 26.000, mas exige só uns R$ 3.900 de margem. '
+      + 'Se o Ibovespa subir 1%, você ganha R$ 260, quase 7% da margem.',
+  },
+  mini_indice: {
+    titulo: 'Mini índice (WIN)',
+    texto: 'Contrato futuro sobre o Ibovespa. Cada ponto vale R$ 0,20 por contrato, e o preço anda de 5 em 5 pontos. '
+      + 'Comprado, você ganha se o Ibovespa subir; vendido, ganha se cair. Vence nos meses pares.',
+  },
+  mini_dolar: {
+    titulo: 'Mini dólar (WDO)',
+    texto: 'Contrato futuro de US$ 10.000, cotado em reais por mil dólares (5.500 pontos = R$ 5,50 por dólar). '
+      + 'Cada ponto vale R$ 10 por contrato e o preço anda de 0,5 em 0,5 ponto. Usado para se proteger da alta do dólar '
+      + 'ou para apostar nela. Vence todo mês.',
+  },
+  ptax: {
+    titulo: 'PTAX',
+    texto: 'A taxa oficial do dólar, calculada pelo Banco Central todo dia útil a partir das negociações do mercado de câmbio. '
+      + 'É ela que liquida os contratos futuros de dólar no vencimento.',
+  },
+  valor_ponto: {
+    titulo: 'Valor do ponto',
+    texto: 'Quanto você ganha ou perde, por contrato, a cada ponto que o preço anda. No mini índice é R$ 0,20; '
+      + 'no mini dólar, R$ 10,00.',
+    exemplo: 'Comprado em 3 mini índices, o Ibovespa sobe 500 pontos: 500 × R$ 0,20 × 3 = R$ 300 de ganho.',
+  },
+  tick: {
+    titulo: 'Variação mínima (tick)',
+    texto: 'O menor passo que o preço pode dar. No mini índice o preço anda de 5 em 5 pontos (R$ 1,00 por contrato); '
+      + 'no mini dólar, de 0,5 em 0,5 ponto (R$ 5,00 por contrato).',
+  },
+  margem_garantia: {
+    titulo: 'Margem de garantia',
+    texto: 'Dinheiro que sai do saldo e fica depositado enquanto a posição está aberta, para garantir que você consiga '
+      + 'pagar as perdas. Continua sendo seu: volta ao saldo quando você zera a posição. No simulador é 15% do valor '
+      + 'do contrato no mini índice e 10% no mini dólar.',
+  },
+  ajuste_diario: {
+    titulo: 'Ajuste diário',
+    texto: 'No mercado futuro, o ganho ou a perda não espera você vender: todo dia, depois do fechamento, a diferença entre '
+      + 'o preço de hoje e o de ontem entra ou sai do seu saldo. É assim que a B3 evita que as perdas se acumulem.',
+    exemplo: 'Vendido em 1 mini dólar, o preço vai de 5.400 para 5.450 pontos: −50 × R$ 10 = −R$ 500 no saldo.',
+  },
+  chamada_margem: {
+    titulo: 'Chamada de margem',
+    texto: 'Quando as perdas consomem o seu dinheiro, a corretora pede mais garantia. Se você não deposita, ela zera a '
+      + 'posição. No simulador: se o saldo ficar negativo depois do ajuste diário, os seus minicontratos são zerados e '
+      + 'a margem cobre o que faltar.',
+  },
+  vencimento_futuro: {
+    titulo: 'Vencimento e rolagem',
+    texto: 'Todo contrato futuro tem data para acabar. O código mostra qual é: WIN + letra do mês + ano (WINZ26 = dezembro '
+      + 'de 2026). No último dia de negociação a posição é liquidada pelo preço do dia e a margem volta ao saldo. Quem quer '
+      + 'continuar abre o contrato seguinte: isso se chama rolagem.',
+    exemplo: 'Letras: F jan, G fev, H mar, J abr, K mai, M jun, N jul, Q ago, U set, V out, X nov, Z dez.',
+  },
   fato_relevante: {
     titulo: 'Fato relevante',
     texto: 'Comunicado oficial que a empresa é obrigada a divulgar, ao mesmo tempo para todos os investidores, sempre que '

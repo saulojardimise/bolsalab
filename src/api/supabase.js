@@ -210,6 +210,25 @@ export function criarApi(supabase, { urlRetorno } = {}) {
       checar(await supabase.rpc('definir_foto', { p_url: null }));
     },
 
+    // ---------------- minicontratos (WIN e WDO) ----------------
+    async futurosMercado() {
+      return checar(await supabase.rpc('futuros_mercado'));
+    },
+    async futurosPosicoes(uid) {
+      return checar(await supabase.from('futuros_posicoes').select('*').eq('user_id', uid).order('contrato'));
+    },
+    async futurosOrdens(uid, limite = 100) {
+      return checar(await supabase.from('futuros_ordens').select('*').eq('user_id', uid)
+        .order('criado_em', { ascending: false }).limit(limite));
+    },
+    async futurosAjustes(uid, limite = 100) {
+      return checar(await supabase.from('futuros_ajustes').select('*').eq('user_id', uid)
+        .order('criado_em', { ascending: false }).limit(limite));
+    },
+    async executarFuturo(ativo, lado, quantidade) {
+      return checar(await supabase.rpc('executar_ordem_futuro', { p_ativo: ativo, p_lado: lado, p_quantidade: quantidade }));
+    },
+
     async executarOrdem(ticker, tipo, quantidade) {
       return checar(await supabase.rpc('executar_ordem', {
         p_ticker: ticker, p_tipo: tipo, p_quantidade: quantidade,

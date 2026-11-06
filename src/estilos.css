@@ -794,3 +794,14 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .aluno-email { overflow-wrap: anywhere; }
 .ranking-gestor .perfis-aluno { margin-top: 6px; }
 .chip-perfil { white-space: normal; max-width: 100%; }
+
+/* minicontratos */
+.selo-futuro {
+  display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px;
+  font-weight: 800; font-size: 0.78rem; letter-spacing: 0.02em; color: #fff;
+}
+.acao-cabeca .selo-futuro { width: 56px; height: 56px; border-radius: 16px; font-size: 1rem; }
+.selo-win { background: linear-gradient(135deg, #0B6E4F, #00956F); }
+.selo-wdo { background: linear-gradient(135deg, #1D4ED8, #3B82F6); }
+.posicao-lado { font-size: 1.05rem; }
+.campo-quantidade:has(#qtd-futuro) label { grid-column: 1 / -1; }

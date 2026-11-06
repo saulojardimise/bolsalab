@@ -1,3 +1,4 @@
+import { previaFuturo } from '../lib/futuros.js';
 // Modo demonstração: mesma interface da api do Supabase, com dados fictícios
 // em memória e as mesmas regras do banco. Serve para ver as telas sem servidor.
 import { previa } from '../lib/regras.js';
@@ -90,6 +91,7 @@ function criarEstado() {
     posicoes: {},   // ticker -> { quantidade, preco_medio }
     vendidas: {},   // ticker -> { quantidade, preco_medio, garantia, aluguel_pago, corretagem_paga, aberta_em }
     ordens: [],
+    futuros: [], futurosOrdens: [],
     cobrancas: [],
     proximoId: 1,
   };
@@ -313,10 +315,52 @@ export function criarApiDemo() {
       await atraso();
       const rnd = semente('indices');
       let ibov = 128000;
+      let dolar = 5.48;
       return diasUteis(60).flatMap((data) => {
         ibov = r2(ibov * (1 + (rnd() - 0.47) * 0.018));
-        return [{ serie: 'IBOV', data, valor: ibov }, { serie: 'CDI', data, valor: 0.055131 }];
+        dolar = Math.round(dolar * (1 + (rnd() - 0.5) * 0.012) * 10000) / 10000;
+        return [{ serie: 'IBOV', data, valor: ibov }, { serie: 'CDI', data, valor: 0.055131 }, { serie: 'PTAX', data, valor: dolar }];
       });
+    },
+    async futurosMercado() {
+      const ind = await this.indices();
+      const ultimo = (serie) => ind.filter((i) => i.serie === serie).slice(-2);
+      const mk = (ativo, nome, serie, tick, ponto, pctMargem, contrato, vencimento, ultimoDia) => {
+        const [a, b] = ultimo(serie).map((i) => (ativo === 'WIN' ? Math.round(i.valor / 5) * 5 : Math.round(i.valor * 2000) / 2));
+        return { ativo, nome, contrato, vencimento, ultimo_dia: ultimoDia, preco: b, data: ultimo(serie)[1].data,
+                 variacao_pct: r2((b / a - 1) * 100), valor_ponto: ponto, tick, valor_contrato: r2(b * ponto),
+                 margem: r2(b * ponto * pctMargem), corretagem: 10 };
+      };
+      return [
+        mk('WIN', 'Mini Ibovespa', 'IBOV', 5, 0.2, 0.15, 'WINZ26', '2026-12-16', '2026-12-16'),
+        mk('WDO', 'Mini dólar', 'PTAX', 0.5, 10, 0.10, 'WDOZ26', '2026-12-01', '2026-11-30'),
+      ];
+    },
+    async futurosPosicoes() { await atraso(); return estado.futuros.map((f) => ({ ...f })); },
+    async futurosOrdens() { await atraso(); return [...estado.futurosOrdens].reverse(); },
+    async futurosAjustes() { await atraso(); return []; },
+    async executarFuturo(ativo, ladoOp, quantidade) {
+      await atraso(400);
+      if (!(await this.negociacaoLiberada())) throw new Error('Negociação fechada. Liberada em dias úteis das 19h às 9h.');
+      const c = (await this.futurosMercado()).find((f) => f.ativo === ativo);
+      const pos = estado.futuros.find((f) => f.contrato === c.contrato) ?? null;
+      const p = previaFuturo({ operacao: ladoOp, quantidade, contrato: c, posicao: pos, saldo: estado.perfil.saldo });
+      if (p.erro) throw new Error(p.erro);
+      estado.perfil.saldo = p.saldoApos;
+      estado.futuros = estado.futuros.filter((f) => f.contrato !== c.contrato);
+      if (p.nova !== 0) {
+        const mesmaDirecao = pos && Math.sign(pos.quantidade) === Math.sign(p.nova);
+        estado.futuros.push({
+          contrato: c.contrato, ativo, quantidade: p.nova, preco_ajuste: c.preco, data_ajuste: c.data, ultimo_dia: c.ultimo_dia,
+          preco_medio: mesmaDirecao && p.abre ? r2((Math.abs(pos.quantidade) * pos.preco_medio + p.abre * c.preco) / Math.abs(p.nova)) : (mesmaDirecao ? pos.preco_medio : c.preco),
+          garantia: mesmaDirecao ? r2(pos.garantia + p.depositada - p.devolvida) : p.depositada, resultado: mesmaDirecao ? pos.resultado : 0,
+        });
+      }
+      const o = { id: estado.futurosOrdens.length + 1, contrato: c.contrato, ativo, lado: ladoOp, quantidade: p.quantidade,
+                  preco: c.preco, corretagem: 10, margem: r2(p.depositada - p.devolvida), saldo_apos: p.saldoApos,
+                  criado_em: new Date().toISOString() };
+      estado.futurosOrdens.push(o);
+      return o;
     },
     async carteira() { await atraso(); return carteira(); },
     async vendidas() { await atraso(); return vendidas(); },
