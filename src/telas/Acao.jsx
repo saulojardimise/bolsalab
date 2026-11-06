@@ -3,6 +3,7 @@ import { api } from '../api/index.js';
 import { noPeriodo } from '../lib/periodos.js';
 import { diaMes, diaSemanaMes, numero, pct, reais, reaisComSinal, tendencia, volume } from '../lib/formato.js';
 import Grafico from '../componentes/Grafico.jsx';
+import Candles from '../componentes/Candles.jsx';
 import Periodos from '../componentes/Periodos.jsx';
 import Icone from '../componentes/Icone.jsx';
 import Logo from '../componentes/Logo.jsx';
@@ -20,6 +21,13 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
 
   const [historico, setHistorico] = useState(null);
   const [periodo, setPeriodo] = useState('1M');
+  const [tipoGrafico, setTipoGrafico] = useState(() => {
+    try { return localStorage.getItem('bolsalab:grafico') || 'linha'; } catch { return 'linha'; }
+  });
+  const trocarGrafico = (t) => {
+    setTipoGrafico(t);
+    try { localStorage.setItem('bolsalab:grafico', t); } catch { /* sem armazenamento */ }
+  };
   const [erro, setErro] = useState('');
 
   useEffect(() => {
@@ -30,6 +38,7 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
 
   const pontos = useMemo(() => historico &&
     noPeriodo(historico.map((h) => ({ data: h.data, valor: Number(h.preco) })), periodo), [historico, periodo]);
+  const velas = useMemo(() => historico && noPeriodo(historico, periodo), [historico, periodo]);
 
   // últimos 10 fechamentos, do mais recente para o mais antigo, com a variação de cada dia
   const fechamentos = useMemo(() => {
@@ -74,8 +83,15 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
         )}
 
         {erro && <p className="aviso aviso-erro" role="alert">{erro}</p>}
-        {pontos ? <Grafico pontos={pontos} altura={200} rotulo={`Fechamentos de ${ticker}`} />
-                : <div className="grafico" style={{ height: 200 }} aria-busy="true" />}
+        <div className="tipo-grafico" role="group" aria-label="Tipo de gráfico">
+          <button aria-pressed={tipoGrafico === 'linha'} onClick={() => trocarGrafico('linha')}>Linha</button>
+          <button aria-pressed={tipoGrafico === 'candles'} onClick={() => trocarGrafico('candles')}>Candles</button>
+          <Termo id="candlestick" />
+        </div>
+        {!pontos ? <div className="grafico" style={{ height: 200 }} aria-busy="true" />
+          : tipoGrafico === 'candles'
+            ? <Candles velas={velas} altura={220} rotulo={`Candles de ${ticker}`} />
+            : <Grafico pontos={pontos} altura={200} rotulo={`Fechamentos de ${ticker}`} />}
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
 
         <dl className="estatisticas">

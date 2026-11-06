@@ -68,6 +68,13 @@ export const GLOSSARIO = {
     texto: 'Uma proteção (parecida com um "stop loss"): se o prejuízo acumulado de uma venda a descoberto chegar a 80% '
       + 'do seu saldo disponível, o simulador faz a recompra sozinho, para o prejuízo não crescer mais.',
   },
+  candlestick: {
+    titulo: 'Candlestick (candle)',
+    texto: 'Gráfico em que cada dia vira uma "vela". O corpo vai do preço de abertura ao de fechamento: verde se a ação '
+      + 'fechou acima de onde abriu, vermelho se fechou abaixo. Os traços finos (pavios) mostram a máxima e a mínima do dia. '
+      + 'Num olhar, dá para ver se o dia foi de alta ou de queda e o quanto o preço oscilou.',
+    exemplo: 'Abriu a R$ 30, foi até R$ 31,50, caiu até R$ 29,80 e fechou a R$ 31: vela verde de 30 a 31, pavio de 29,80 a 31,50.',
+  },
   fechamento: {
     titulo: 'Preço de fechamento',
     texto: 'O preço do último negócio do dia na bolsa. O simulador usa o fechamento de cada pregão: '

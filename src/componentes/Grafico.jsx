@@ -106,7 +106,7 @@ export default function Grafico({ pontos, altura = 180, eixos = true, rotulo = '
 }
 
 // 0,1 / 0,2 / 0,5 / 1 / 2 / 5 / 10 ...
-function degrau(bruto) {
+export function degrau(bruto) {
   const p = 10 ** Math.floor(Math.log10(bruto));
   const n = bruto / p;
   return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p;

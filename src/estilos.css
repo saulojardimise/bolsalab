@@ -822,3 +822,19 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 .aviso-alerta { display: flex; gap: 10px; align-items: flex-start; background: var(--ambar-fundo); color: var(--ambar-texto); border-radius: var(--raio); padding: 10px 12px; font-weight: 600; }
 .aviso-alerta .icone { flex: none; margin-top: 2px; }
 .aviso-botoes { display: grid; gap: 8px; margin-top: 4px; }
+
+/* candles */
+.tipo-grafico { display: flex; align-items: center; gap: 4px; justify-self: end; margin-bottom: -4px; }
+.tipo-grafico button {
+  border: 1px solid var(--linha); background: none; color: var(--suave); font: inherit; font-size: 0.82rem; font-weight: 700;
+  padding: 4px 12px; border-radius: 999px; cursor: pointer;
+}
+.tipo-grafico button[aria-pressed="true"] { background: var(--azul-fundo); color: var(--marinho); border-color: transparent; }
+.candles-leitura { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.8rem; color: var(--suave); min-height: 1.2em; margin-bottom: 4px; }
+.candles-leitura strong { font-weight: 800; }
+.candle-alta .candle-pavio { stroke: var(--verde-forte); }
+.candle-alta .candle-corpo { fill: var(--verde-forte); }
+.candle-baixa .candle-pavio { stroke: var(--vermelho); }
+.candle-baixa .candle-corpo { fill: var(--vermelho); }
+.candle-pavio { stroke-width: 1.2; }
+.candle-foco { fill: var(--fundo); }
