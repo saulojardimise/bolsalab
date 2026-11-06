@@ -127,8 +127,8 @@ export const GLOSSARIO = {
     texto: 'Um acordo de comprar ou vender um ativo numa data futura, por um preço combinado hoje. Você não paga o valor '
       + 'inteiro: deposita só uma margem de garantia, e o ganho ou a perda entra no saldo todo dia (ajuste diário). '
       + 'Por isso o minicontrato é alavancado: com pouco dinheiro, você fica exposto a um valor bem maior.',
-    exemplo: 'Um mini índice com o Ibovespa em 130.000 pontos vale R$ 26.000, mas exige só uns R$ 3.900 de margem. '
-      + 'Se o Ibovespa subir 1%, você ganha R$ 260, quase 7% da margem.',
+    exemplo: 'Um mini índice com o Ibovespa em 166.000 pontos vale R$ 33.200, mas exige só R$ 900 de margem. '
+      + 'Se o Ibovespa subir 1%, você ganha R$ 332, mais de um terço da margem. Se cair 1%, perde o mesmo.',
   },
   mini_indice: {
     titulo: 'Mini índice (WIN)',
@@ -160,8 +160,8 @@ export const GLOSSARIO = {
   margem_garantia: {
     titulo: 'Margem de garantia',
     texto: 'Dinheiro que sai do saldo e fica depositado enquanto a posição está aberta, para garantir que você consiga '
-      + 'pagar as perdas. Continua sendo seu: volta ao saldo quando você zera a posição. No simulador é 15% do valor '
-      + 'do contrato no mini índice e 10% no mini dólar.',
+      + 'pagar as perdas. Continua sendo seu: volta ao saldo quando você zera a posição. No simulador é R$ 900 por contrato '
+      + 'no mini índice e R$ 1.500 por contrato no mini dólar.',
   },
   ajuste_diario: {
     titulo: 'Ajuste diário',

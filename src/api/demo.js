@@ -325,15 +325,15 @@ export function criarApiDemo() {
     async futurosMercado() {
       const ind = await this.indices();
       const ultimo = (serie) => ind.filter((i) => i.serie === serie).slice(-2);
-      const mk = (ativo, nome, serie, tick, ponto, pctMargem, contrato, vencimento, ultimoDia) => {
+      const mk = (ativo, nome, serie, tick, ponto, margem, contrato, vencimento, ultimoDia) => {
         const [a, b] = ultimo(serie).map((i) => (ativo === 'WIN' ? Math.round(i.valor / 5) * 5 : Math.round(i.valor * 2000) / 2));
         return { ativo, nome, contrato, vencimento, ultimo_dia: ultimoDia, preco: b, data: ultimo(serie)[1].data,
                  variacao_pct: r2((b / a - 1) * 100), valor_ponto: ponto, tick, valor_contrato: r2(b * ponto),
-                 margem: r2(b * ponto * pctMargem), corretagem: 10 };
+                 margem, corretagem: 10 };
       };
       return [
-        mk('WIN', 'Mini Ibovespa', 'IBOV', 5, 0.2, 0.15, 'WINZ26', '2026-12-16', '2026-12-16'),
-        mk('WDO', 'Mini dólar', 'PTAX', 0.5, 10, 0.10, 'WDOZ26', '2026-12-01', '2026-11-30'),
+        mk('WIN', 'Mini Ibovespa', 'IBOV', 5, 0.2, 900, 'WINZ26', '2026-12-16', '2026-12-16'),
+        mk('WDO', 'Mini dólar', 'PTAX', 0.5, 10, 1500, 'WDOZ26', '2026-12-01', '2026-11-30'),
       ];
     },
     async futurosPosicoes() { await atraso(); return estado.futuros.map((f) => ({ ...f })); },

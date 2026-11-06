@@ -33,12 +33,14 @@ export default function AvisoNovidade({ futuros, aoFechar, aoConhecer }) {
   const win = futuros?.find((f) => f.ativo === 'WIN' && f.preco != null);
   const wdo = futuros?.find((f) => f.ativo === 'WDO' && f.preco != null);
   // exemplos com os números de hoje (ou valores redondos, se ainda não houver preço)
-  const w = win ?? { contrato: 'WINZ26', preco: 166000, margem: 4980, valor_contrato: 33200 };
-  const d = wdo ?? { contrato: 'WDOZ26', preco: 5460, margem: 5460, valor_contrato: 54600 };
+  const w = win ?? { contrato: 'WINZ26', preco: 166000, margem: 900, valor_contrato: 33200 };
+  const d = wdo ?? { contrato: 'WDOZ26', preco: 5460, margem: 1500, valor_contrato: 54600 };
   const winAlta = 1000;                                   // pontos
   const ganhoWin = winAlta * 0.2;                         // 1 contrato
   const wdoSobe = 50;                                     // pontos
   const perdaWdo = wdoSobe * 10;
+  const daMargem = (valor, margem) => `${Math.round((valor / Number(margem)) * 100)}% da margem`;
+  const umPorCento = Math.round(Number(w.preco) * 0.01 * 0.2);           // 1% do Ibovespa em 1 contrato
 
   return (
     <dialog ref={dialogo} className="folha aviso-novidade" aria-labelledby="aviso-titulo"
@@ -83,7 +85,8 @@ export default function AvisoNovidade({ futuros, aoFechar, aoConhecer }) {
           Você compra 1 {w.contrato} a {pontos(w.preco, 'WIN')} pontos. O contrato vale {reais(w.valor_contrato)}, mas você
           só deposita {reais(w.margem)} de margem (+ R$ 10 de corretagem). No dia seguinte o Ibovespa sobe {pontos(winAlta, 'WIN')} pontos:
           o ajuste diário põe <strong className="alta">+{reais(ganhoWin)}</strong> no seu saldo
-          ({pontos(winAlta, 'WIN')} × R$ 0,20). Se tivesse caído os mesmos pontos, sairiam {reais(ganhoWin)}.
+          ({pontos(winAlta, 'WIN')} × R$ 0,20), {daMargem(ganhoWin, w.margem)} depositada. Se tivesse caído os mesmos pontos,
+          sairiam {reais(ganhoWin)}.
         </p>
 
         <h3>Exemplo 2: vendido em mini dólar</h3>
@@ -91,12 +94,16 @@ export default function AvisoNovidade({ futuros, aoFechar, aoConhecer }) {
           Você acha que o dólar vai cair e vende 1 {d.contrato} a {pontos(d.preco, 'WDO')} pontos (R$ {(d.preco / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 4 })} por dólar).
           Mas o dólar sobe para {pontos(d.preco + wdoSobe, 'WDO')}: são {wdoSobe} pontos contra você, e o ajuste tira
           <strong className="baixa"> −{reais(perdaWdo)}</strong> do seu saldo ({wdoSobe} × R$ 10). Uma variação de menos de 1% no dólar
-          virou quase 10% da margem.
+          levou {daMargem(perdaWdo, d.margem)}.
         </p>
 
         <p className="aviso-alerta">
           <Icone nome="alerta" tamanho={18} />
-          <span>Alavancagem funciona nos dois sentidos: os ganhos e as perdas crescem rápido. Comece com 1 contrato e acompanhe o extrato.</span>
+          <span>
+            Alavancagem funciona nos dois sentidos. Com margem baixa, dá para abrir muitos contratos: 10 mini índices exigem só
+            {' '}{reais(10 * Number(w.margem))}, mas cada 1% do Ibovespa passa a valer {reais(10 * umPorCento)} de ganho ou de perda.
+            Comece com 1 contrato e acompanhe o extrato.
+          </span>
         </p>
 
         <div className="aviso-botoes">
