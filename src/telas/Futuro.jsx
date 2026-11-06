@@ -41,7 +41,6 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
 
   const pontosGrafico = useMemo(() => indices && noPeriodo(serieFuturo(indices, ativo), periodo), [indices, ativo, periodo]);
   const velas = useMemo(() => indices && noPeriodo(velasFuturo(indices, ativo), periodo), [indices, ativo, periodo]);
-  const temVelas = velas && velas.some((v) => v.abertura != null && v.maxima != null);
 
   if (!contrato || contrato.preco == null) {
     return (
@@ -118,18 +117,6 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
           ? <Grafico pontos={pontosGrafico} altura={170} rotulo={contrato.contrato} formatar={(v) => `${pontos(v, ativo)} pt`} casasEixo={0} />
           : <div className="grafico" style={{ height: 170 }} />}
         <Periodos valor={periodo} aoTrocar={setPeriodo} />
-        {tipoGrafico === 'candles' && !temVelas && indices && (
-          <p className="nota">Os candles usam abertura, máxima e mínima {ativo === 'WIN' ? 'do Ibovespa' : 'dos boletins da PTAX'}, que começam a ser gravadas agora: os dias antigos aparecem como um traço.</p>
-        )}
-        {ativo === 'WDO' && tipoGrafico === 'candles' && temVelas && (
-          <p className="nota">No mini dólar, o corpo de cada vela vai da PTAX do dia anterior à PTAX do dia, e os pavios mostram a máxima e a mínima do dólar comercial no dia todo.</p>
-        )}
-        <p className="nota">
-          Preço do simulador: {ativo === 'WIN'
-            ? 'fechamento do Ibovespa, arredondado para 5 pontos'
-            : <>dólar <Termo id="ptax">PTAX</Termo> de venda × 1.000, arredondado para 0,5 ponto</>}.
-          No mercado real o futuro costuma ficar um pouco acima, por causa dos juros até o vencimento.
-        </p>
       </section>
 
       <section className="cartao" aria-labelledby="titulo-contrato">
