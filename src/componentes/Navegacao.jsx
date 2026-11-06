@@ -6,7 +6,7 @@ const ABAS = [
   ['mercado', 'Mercado'],
   ['noticias', 'Notícias'],
   ['carteira', 'Carteira'],
-  ['turma', 'Turma'],
+  ['turma', 'Grupo'],
 ];
 
 export default function Navegacao({ aba, aoTrocar }) {

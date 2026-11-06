@@ -101,7 +101,7 @@ export default function MenuPerfil({ perfil, resumo, aoFechar, aoSair, aoMudarFo
           <div className="perfil-id">
             <h2 id="perfil-nome">{perfil.nome || 'Sem nome'}</h2>
             <p className="suave">{perfil.email}</p>
-            {perfil.turma && <p className="suave">Turma {perfil.turma}</p>}
+            {perfil.turma && <p className="suave">Grupo {perfil.turma}</p>}
             {perfil.criado_em && <p className="suave">Membro desde {dataBR(perfil.criado_em)}</p>}
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function MenuPerfil({ perfil, resumo, aoFechar, aoSair, aoMudarFo
           <dl className="perfil-numeros">
             {numeros?.posicao && (
               <div className="perfil-destaque">
-                <dt>Posição na turma</dt>
+                <dt>Posição no grupo</dt>
                 <dd><span className="num">{numeros.posicao.lugar}º</span> <small>de {numeros.posicao.de}</small></dd>
               </div>
             )}

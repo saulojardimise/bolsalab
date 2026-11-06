@@ -24,20 +24,20 @@ export default function Turma({ turmaId, turmaNome, versao }) {
     <div className="pilha">
       <div className="secao-topo">
         <div>
-          <h1>Turma</h1>
+          <h1>Grupo</h1>
           {turmaNome && <p className="suave">{turmaNome}</p>}
         </div>
         {turmaId && (
           <div className="alternar" role="group" aria-label="Quem aparece no ranking">
-            <button aria-pressed={soTurma} onClick={() => setSoTurma(true)}>Minha turma</button>
-            <button aria-pressed={!soTurma} onClick={() => setSoTurma(false)}>Todas</button>
+            <button aria-pressed={soTurma} onClick={() => setSoTurma(true)}>Meu grupo</button>
+            <button aria-pressed={!soTurma} onClick={() => setSoTurma(false)}>Todos</button>
           </div>
         )}
       </div>
 
       {eu && lista.length > 1 && (
         <p className="cartao destaque-posicao">
-          Você está em <strong>{eu.posicao}º lugar</strong> entre {lista.length} {soTurma ? 'colegas da turma' : 'alunos'},
+          Você está em <strong>{eu.posicao}º lugar</strong> entre {lista.length} {soTurma ? 'colegas do grupo' : 'alunos'},
           com <strong className={tendencia(eu.rentabilidade_pct)}>{pct(eu.rentabilidade_pct)}</strong>.
         </p>
       )}
