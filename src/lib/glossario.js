@@ -26,7 +26,7 @@ export const GLOSSARIO = {
   },
   corretagem: {
     titulo: 'Corretagem',
-    texto: 'Taxa que a corretora cobra por cada ordem executada, de compra ou de venda. No simulador é R$ 15 por ordem, '
+    texto: 'Taxa que a corretora cobra por cada ordem executada, de compra ou de venda. No simulador é R$ 15 por ordem de ações e R$ 10 por ordem de minicontratos, '
       + 'qualquer que seja a quantidade. Por isso, muitas ordens pequenas saem caro.',
   },
   venda_descoberto: {

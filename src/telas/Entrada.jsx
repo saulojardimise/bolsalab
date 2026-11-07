@@ -67,7 +67,7 @@ export default function Entrada() {
       <div className="entrada-marca">
         <Marca altura={52} subtitulo />
         <p className="entrada-texto">
-          Você começa com R$ 10.000 virtuais e investe nas ações do Ibovespa, com os preços reais de fechamento.
+          Você começa com R$ 10.000 virtuais e investe nas ações do Ibovespa e nos minicontratos futuros de índice e dólar, com os preços reais de fechamento.
         </p>
       </div>
 
