@@ -850,3 +850,54 @@ input:focus-visible, select:focus-visible { outline: none; border-color: var(--f
 @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(0, 149, 111, 0.5); } 70% { box-shadow: 0 0 0 6px rgba(0, 149, 111, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 149, 111, 0); } }
 @media (prefers-reduced-motion: reduce) { .ponto-vivo { animation: none; } }
 .nota-hoje { margin-top: -6px; }
+
+/* ================================================================ telas grandes
+   Celular e tablet em pé: uma coluna, barra de abas embaixo (como sempre).
+   Computador (tela a partir de 1024 px): barra de abas vira menu lateral,
+   o conteúdo fica mais largo e as telas principais se dividem em duas colunas. */
+.coluna { display: contents; }               /* no celular, as colunas não existem: os cartões seguem um embaixo do outro */
+.coluna > section { display: grid; gap: 12px; min-width: 0; }
+.ordem-fim { order: 9; }                      /* no celular, "Últimos fechamentos" fica no fim */
+
+@media (min-width: 1024px) {
+  .painel { padding-left: 232px; padding-bottom: 40px; }
+  .topo, .faixa-demo, .conteudo { max-width: 1180px; }
+  .conteudo { padding-left: 32px; padding-right: 32px; padding-top: 20px; }
+  .topo { padding-left: 32px; padding-right: 32px; padding-top: 18px; }
+
+  /* menu lateral */
+  .navegacao {
+    inset: 0 auto 0 0; width: 216px; flex-direction: column; justify-content: flex-start; gap: 4px;
+    padding: 96px 14px 24px; border-top: 0; border-right: 1px solid var(--linha);
+  }
+  .nav-item {
+    flex: none; max-width: none; width: 100%; height: 48px; padding: 0 14px;
+    grid-auto-flow: column; justify-content: start; gap: 12px; border-radius: 12px;
+    font-size: 0.98rem; cursor: pointer;
+  }
+  .nav-item:hover { background: var(--fundo); color: var(--marinho); }
+  .nav-item[aria-current=page] { background: var(--verde-fundo); }
+  .recado { left: 232px; bottom: 24px; }
+
+  /* larguras */
+  .pilha { max-width: 760px; margin: 0 auto; width: 100%; }
+  .pilha-larga, .pilha-dupla { max-width: none; }
+
+  /* duas colunas: principal à esquerda, apoio à direita */
+  .pilha-dupla { grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr); column-gap: 24px; align-items: start; }
+  .pilha-dupla > :not(.coluna) { grid-column: 1 / -1; }
+  .coluna { display: grid; gap: 18px; align-content: start; min-width: 0; }
+  .coluna-b:has(.boleta) { position: sticky; top: 16px; }
+  .ordem-fim { order: 0; }
+
+  /* listas em duas colunas: ações do mercado e notícias */
+  .pilha-larga .ativos { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
+  .pilha-larga .ativos li:nth-child(2) { border-top: 0; }
+  .pilha-larga .noticias { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
+  .pilha-larga .noticias > .noticia:nth-child(2) { border-top: 0; }
+  .pilha-larga .filtros { max-width: 760px; }
+}
+
+@media (min-width: 1024px) and (hover: hover) {
+  .ativo:hover, .posicao:hover { background: var(--fundo); }
+}

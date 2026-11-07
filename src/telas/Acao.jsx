@@ -55,13 +55,14 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
   const mudanca = empresa.preco_anterior ? Number(empresa.preco) - Number(empresa.preco_anterior) : null;
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-dupla">
       <header className="barra-acao">
         <button className="botao-icone" onClick={aoVoltar} aria-label="Voltar"><Icone nome="voltar" /></button>
         <h1>{ticker}</h1>
         <span style={{ width: 40 }} />
       </header>
 
+      <div className="coluna coluna-a">
       <section className="cartao">
         <div className="acao-cabeca">
           <Logo ticker={ticker} url={empresa.logo_url} tamanho={56} />
@@ -107,6 +108,28 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
         </dl>
       </section>
 
+        {fechamentos.length > 0 && (
+          <section className="cartao ordem-fim" aria-labelledby="titulo-fechamentos">
+            <h2 id="titulo-fechamentos">Últimos fechamentos</h2>
+            <table className="tabela-fechamentos">
+              <thead>
+                <tr><th scope="col">Dia</th><th scope="col">Fechamento</th><th scope="col">Variação</th></tr>
+              </thead>
+              <tbody>
+                {fechamentos.map((f) => (
+                  <tr key={f.data}>
+                    <td>{diaSemanaMes(f.data)}</td>
+                    <td className="num">{reais(f.preco)}</td>
+                    <td className={`num ${tendencia(f.variacao)}`}>{f.variacao == null ? '–' : pct(f.variacao)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+        </div>
+
+        <div className="coluna coluna-b">
       {(comprada || vendida) && (
         <section className="cartao posicao-resumo" aria-label="Sua posição">
           {comprada && (
@@ -134,26 +157,8 @@ export default function Acao({ ticker, operacaoInicial, dados, aoVoltar, aoExecu
 
       <Boleta ticker={ticker} empresa={empresa} comprada={comprada} vendida={vendida}
               operacaoInicial={operacaoInicial} dados={dados} aoExecutar={aoExecutar} />
+      </div>
 
-      {fechamentos.length > 0 && (
-        <section className="cartao" aria-labelledby="titulo-fechamentos">
-          <h2 id="titulo-fechamentos">Últimos fechamentos</h2>
-          <table className="tabela-fechamentos">
-            <thead>
-              <tr><th scope="col">Dia</th><th scope="col">Fechamento</th><th scope="col">Variação</th></tr>
-            </thead>
-            <tbody>
-              {fechamentos.map((f) => (
-                <tr key={f.data}>
-                  <td>{diaSemanaMes(f.data)}</td>
-                  <td className="num">{reais(f.preco)}</td>
-                  <td className={`num ${tendencia(f.variacao)}`}>{f.variacao == null ? '–' : pct(f.variacao)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
     </div>
   );
 }

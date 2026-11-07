@@ -45,7 +45,7 @@ export default function Noticias({ dados, aoEscolher }) {
   );
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-larga">
       <div className="secao-topo">
         <h1>Notícias</h1>
         {atualizado && <p className="suave">Atualizado {quando(atualizado)}</p>}

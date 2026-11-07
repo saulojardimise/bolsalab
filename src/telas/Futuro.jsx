@@ -83,13 +83,14 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
   }
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-dupla">
       <header className="barra-acao">
         <button className="botao-icone" onClick={aoVoltar} aria-label="Voltar"><Icone nome="voltar" /></button>
         <h1>{contrato.contrato}</h1>
         <span style={{ width: 40 }} />
       </header>
 
+      <div className="coluna coluna-a">
       <section className="cartao">
         <div className="acao-cabeca">
           <span className={`selo-futuro selo-${ativo.toLowerCase()}`} aria-hidden="true">{ativo}</span>
@@ -141,6 +142,9 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
         </p>
       </section>
 
+      </div>
+
+      <div className="coluna coluna-b">
       {posicao && (
         <section className="cartao posicao-futuro" aria-labelledby="titulo-posicao-futuro">
           <h2 id="titulo-posicao-futuro">Sua posição</h2>
@@ -220,6 +224,7 @@ export default function Futuro({ ativo, dados, aoVoltar, aoExecutar }) {
           perda do dia. Se o saldo ficar negativo, os seus minicontratos são zerados (<Termo id="chamada_margem">chamada de margem</Termo>).
         </p>
       </form>
+      </div>
     </div>
   );
 }

@@ -33,9 +33,10 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
   }, {})).sort((a, b) => b[1] - a[1]);
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-dupla">
       <h1>Carteira</h1>
 
+      <div className="coluna coluna-a">
       <section className="cartao" aria-label="Resumo">
         <p className="suave"><Termo id="patrimonio">Patrimônio virtual</Termo></p>
         <p className="valor-grande num">{reais(resumo.patrimonio)}</p>
@@ -98,6 +99,9 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
         </section>
       )}
 
+      </div>
+
+      <div className="coluna coluna-b">
       {carteira.length > 0 && (
         <section aria-labelledby="titulo-compradas">
           <h2 id="titulo-compradas" className="secao-titulo">Ações compradas <Termo id="preco_medio" /></h2>
@@ -197,6 +201,7 @@ export default function Carteira({ uid, dados, resumo, versao, aoEscolher, irPar
           </p>
         </section>
       )}
+      </div>
     </div>
   );
 }

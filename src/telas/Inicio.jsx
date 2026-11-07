@@ -63,12 +63,13 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
   const d = DICAS[dica];
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-dupla">
       <section className="saudacao">
         <h1>Olá, {nome}!</h1>
         <StatusPregao liberada={dados.liberada} pausada={dados.config.negociacao_pausada} demo={api.modoDemo} />
       </section>
 
+      <div className="coluna coluna-a">
       <section className="cartao" aria-labelledby="titulo-patrimonio">
         <h2 id="titulo-patrimonio"><Termo id="patrimonio">Patrimônio virtual</Termo></h2>
         <p className="valor-grande num">{reais(resumo.patrimonio)}</p>
@@ -108,6 +109,9 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
         </section>
       )}
 
+      </div>
+
+      <div className="coluna coluna-b">
       <section className="cartao dica" aria-labelledby="titulo-dica" aria-live="polite">
         <span className="dica-icone"><Icone nome="lampada" tamanho={26} /></span>
         <div className="dica-texto">
@@ -139,6 +143,7 @@ export default function Inicio({ uid, dados, resumo, linhas, versao, aoEscolher,
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export default function Mercado({ dados, linhas, aoEscolher, aoAbrirFuturo }) {
   const dataRef = mercado.map((e) => e.data).filter(Boolean).sort().at(-1);
 
   return (
-    <div className="pilha">
+    <div className="pilha pilha-larga">
       <div className="secao-topo">
         <h1>Mercado</h1>
         {horaHoje
