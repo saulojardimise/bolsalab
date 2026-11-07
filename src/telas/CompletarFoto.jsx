@@ -51,7 +51,7 @@ export default function CompletarFoto({ perfil, aoMudarFoto, aoConcluir }) {
         <p className="suave">Último passo</p>
         <h1 id="titulo-foto">Complete seu cadastro</h1>
         <p>
-          Coloque uma foto de perfil. Ela aparece no ranking da turma e ajuda o professor a reconhecer você.
+          Coloque uma foto de perfil. Ela aparece no ranking do grupo e ajuda o professor a reconhecer você.
         </p>
 
         <div className="perfil-foto completar-foto-avatar">

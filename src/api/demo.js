@@ -254,7 +254,7 @@ export function criarApiDemo() {
     async cadastrar({ email, token }) {
       await atraso(300);
       const t = await this.verificarToken(token);
-      if (!t) throw new Error('Token de turma inválido ou turma fechada. Peça o token ao professor.');
+      if (!t) throw new Error('Token inválido ou grupo fechado. Peça o token ao professor.');
       if (t.dominio_email && email.trim().toLowerCase().split('@')[1] !== t.dominio_email) {
         throw new Error(`A turma ${t.turma} só aceita e-mails @${t.dominio_email}.`);
       }

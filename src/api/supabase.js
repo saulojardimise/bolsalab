@@ -64,7 +64,7 @@ export function criarApi(supabase, { urlRetorno } = {}) {
 
     async cadastrar({ email, senha, nome, token }) {
       const turma = await this.verificarToken(token);
-      if (!turma) throw new Error('Token de turma inválido ou turma fechada. Peça o token ao professor.');
+      if (!turma) throw new Error('Token inválido ou grupo fechado. Peça o token ao professor.');
       if (!emailAceito(email, turma.dominio_email)) {
         throw new Error(turma.dominio_email
           ? `A turma ${turma.turma} só aceita e-mails @${turma.dominio_email}.`

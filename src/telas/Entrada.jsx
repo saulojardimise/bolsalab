@@ -30,7 +30,7 @@ export default function Entrada() {
     setErro(''); setAviso('');
     if (modo === 'cadastrar') {
       if (!campos.nome.trim()) { setErro('Digite seu nome.'); return; }
-      if (turma === false) { setErro('Token de turma inválido ou turma fechada. Peça o token ao professor.'); return; }
+      if (turma === false) { setErro('Token inválido ou grupo fechado. Peça o token ao professor.'); return; }
       if (turma && !emailAceito(campos.email, turma.dominio_email)) {
         setErro(turma.dominio_email ? `A turma ${turma.turma} só aceita e-mails @${turma.dominio_email}.` : 'Digite um e-mail válido.');
         return;
@@ -43,7 +43,7 @@ export default function Entrada() {
       } else if (modo === 'cadastrar') {
         const r = await api.cadastrar(campos);
         if (r.precisaConfirmar) {
-          setAviso(`Conta criada na turma ${r.turma}. Enviamos um link para ${campos.email.trim()}: abra-o para ativar e depois entre aqui.`);
+          setAviso(`Conta criada no grupo ${r.turma}. Enviamos um link para ${campos.email.trim()}: abra-o para ativar e depois entre aqui.`);
           setModo('entrar');
         }
       } else {
@@ -79,16 +79,16 @@ export default function Entrada() {
         {modo === 'cadastrar' && (
           <>
             <label className="campo">
-              <span>Token da turma</span>
+              <span>Token do grupo</span>
               <input name="token" value={campos.token} onChange={mudar} placeholder="Ex.: K7QM-P2XA"
                      autoCapitalize="characters" autoComplete="off" spellCheck="false" required />
               {turma && (
                 <small className="token-ok">
-                  Turma {turma.turma}. {turma.dominio_email ? `Aceita só e-mails @${turma.dominio_email}.` : 'Aceita qualquer e-mail.'}
+                  Grupo {turma.turma}. {turma.dominio_email ? `Aceita só e-mails @${turma.dominio_email}.` : 'Aceita qualquer e-mail.'}
                 </small>
               )}
-              {turma === false && <small className="token-erro">Token não encontrado ou turma fechada.</small>}
-              {turma === null && <small>O professor passa este código para a turma.</small>}
+              {turma === false && <small className="token-erro">Token não encontrado ou grupo fechado.</small>}
+              {turma === null && <small>O professor passa este código para o grupo.</small>}
             </label>
             <label className="campo">
               <span>Nome</span>
@@ -130,10 +130,10 @@ export default function Entrada() {
           )}
         </div>
 
-        {api.modoDemo && (
+        {modo === 'entrar' && (
           <p className="nota">
-            Demonstração: entre com qualquer e-mail e senha de 6 caracteres. Para ver a área do gestor,
-            entre com saulojardim@id.uff.br. Token de exemplo para o cadastro: ADM3-2026.
+            Primeiro acesso? Toque em <strong>Criar conta</strong> e informe o token do seu grupo,
+            que o professor passa para a turma. Sem o token não é possível entrar no grupo.
           </p>
         )}
       </form>
