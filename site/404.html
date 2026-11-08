@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BolsaLab mudou para bolsalab.app</title>
+<meta http-equiv="refresh" content="3; url=https://bolsalab.app/">
+<link rel="canonical" href="https://bolsalab.app/">
+<style>
+  :root { color-scheme: light dark; --fundo: #f4f6fa; --cartao: #fff; --texto: #0d1b3a; --suave: #5a6478; --verde: #0b7a52; }
+  @media (prefers-color-scheme: dark) { :root { --fundo: #0d1424; --cartao: #16213a; --texto: #eef2fb; --suave: #a7b0c4; --verde: #5fd3a2; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--fundo); color: var(--texto);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 16px; box-sizing: border-box; }
+  main { max-width: 440px; background: var(--cartao); border-radius: 20px; padding: 28px 24px; box-shadow: 0 8px 30px rgb(0 0 0 / .08); }
+  h1 { margin: 0 0 8px; font-size: 1.4rem; }
+  p { margin: 0 0 12px; color: var(--suave); }
+  a.botao { display: block; text-align: center; margin-top: 18px; padding: 14px; border-radius: 14px; background: var(--verde);
+            color: #fff; font-weight: 700; text-decoration: none; }
+  @media (prefers-color-scheme: dark) { a.botao { color: #0d1424; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>O BolsaLab mudou de endereço</h1>
+  <p>Agora ele fica em <strong>bolsalab.app</strong>. Estamos levando você para lá.</p>
+  <p>Se você instalou o app na tela inicial do celular, apague o ícone antigo e instale de novo a partir de bolsalab.app.
+     Na primeira vez, entre com seu e-mail e senha de sempre.</p>
+  <a class="botao" href="https://bolsalab.app/">Abrir bolsalab.app</a>
+</main>
+<script>
+  // apaga o app antigo guardado neste endereço (cópia offline) e vai para o endereço novo
+  (async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+      if ('caches' in window) {
+        const chaves = await caches.keys();
+        await Promise.all(chaves.map((k) => caches.delete(k)));
+      }
+    } catch (e) { /* segue para o endereço novo mesmo assim */ }
+    location.replace('https://bolsalab.app/' + location.search + location.hash);
+  })();
+</script>
+</body>
+</html>
